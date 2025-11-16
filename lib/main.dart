@@ -1,19 +1,11 @@
+import 'package:fit_trac/presentation/utils/core/app_theme.dart';
+import 'package:fit_trac/presentation/utils/core/routes.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'features/auth/presentation/providers/auth_provider.dart';
-import 'features/auth/presentation/screens/home_screens.dart';
-import 'features/auth/presentation/screens/sign_in_page.dart';
-import 'features/auth/presentation/screens/sign_up_page.dart';
+
 
 void main() {
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
-      ],
-      child: const MyApp(),
-    ),
-  );
+  // Removed MultiProvider as we don't need AuthProvider state management yet.
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -23,17 +15,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF111518),
-      ),
-      initialRoute: '/signin',
-      routes: {
-        '/signin': (context) => const SignInPage(),
-        '/signup': (context) => const SignUpPage(),
-        '/home': (context) => const HomePage(),
-      },
+      title: 'Fitness App',
+      theme: AppTheme.darkTheme,
+      // Use the centralized routes map
+      routes: AppRoutes.routes,
+      // Set the initial route to the Home Page
+      initialRoute: AppRoutes.home,
     );
   }
 }
