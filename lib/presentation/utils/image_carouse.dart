@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../utils/auth_button.dart';
-import '../utils/custom_text_field.dart';
-import '../../utils/app_theme.dart';
+
+
+// Core Imports
 import '../../routes.dart';
+import '../../utils/app_theme.dart';
 import '../../utils/app_assets.dart';
+import 'auth_button.dart';
+import 'custom_text_field.dart';
 
 class SignInPage extends StatelessWidget {
   const SignInPage({super.key});
@@ -13,48 +16,58 @@ class SignInPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF161B1F),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 13.0),
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+
                 SvgPicture.asset(AppAssets.logo, height: 70),
-                const SizedBox(height: 20),
-                const SizedBox(height: 30),
+                const SizedBox(height: 10),
+
+               // const ImageCarousel(),
+                const SizedBox(height: 50),
+
                 const CustomTextField(
                   labelText: "Email",
                   keyboardType: TextInputType.emailAddress,
                 ),
                 const SizedBox(height: 16),
+
                 const CustomTextField(
                   labelText: "Password",
                   obscureText: true,
                   suffixIcon: Icon(Icons.visibility_off_outlined, color: Colors.white54),
                 ),
                 const SizedBox(height: 24),
+
                 AuthButton(
                   text: "Sign In",
                   onPressed: () {
-                    Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (route) => false);
+                     Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (route) => false);
                   },
                 ),
                 const SizedBox(height: 20),
+
                 _buildSocialAuthButtons(),
-                const SizedBox(height: 20),
+                const SizedBox(height: 30),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text("Don’t have an account? ", style: TextStyle(color: Colors.white70)),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, AppRoutes.signUp);
+                        // Navigator.pushNamed(context, AppRoutes.signUp);
                       },
                       child: const Text("Register", style: TextStyle(color: AppTheme.primaryTeal, fontWeight: FontWeight.bold)),
                     ),
                   ],
                 ),
+                const SizedBox(height: 20),
               ],
             ),
           ),
@@ -77,8 +90,6 @@ class SignInPage extends StatelessWidget {
               backgroundColor: const Color(0x161B1F),
               side: const BorderSide(color: Color(0x20262B), width: 1),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-              elevation: 3,
-              shadowColor: Colors.black.withOpacity(0.4),
               padding: const EdgeInsets.symmetric(horizontal: 18),
             ),
           ),
@@ -95,8 +106,6 @@ class SignInPage extends StatelessWidget {
               backgroundColor: const Color(0x161B1F),
               side: const BorderSide(color: Color(0x161B1F), width: 1),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-              elevation: 3,
-              shadowColor: Colors.black.withOpacity(0.4),
               padding: const EdgeInsets.symmetric(horizontal: 18),
             ),
           ),

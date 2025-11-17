@@ -10,7 +10,7 @@ class SignUpPage extends StatelessWidget {
   const SignUpPage({super.key});
 
   void _handleSignUp(BuildContext context) {
-    Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (route) => false);
+    Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (route) => true);
   }
 
   @override
@@ -68,7 +68,6 @@ class SignUpPage extends StatelessWidget {
                     const Text("Already have any account? ", style: TextStyle(color: Colors.white70)),
                     GestureDetector(
                       onTap: () {
-                        // Navigates back to SignInPage (since it's usually the previous route)
                         Navigator.pop(context);
                       },
                       child: const Text("Login", style: TextStyle(color: AppTheme.primaryTeal, fontWeight: FontWeight.bold)),
