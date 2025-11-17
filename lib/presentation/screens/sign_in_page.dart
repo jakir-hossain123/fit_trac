@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../utils/auth_button.dart';
-import '../utils/core/app_theme.dart';
-import '../utils/core/routes.dart';
 import '../utils/custom_text_field.dart';
-
+import '../../utils/app_theme.dart';
+import '../../routes.dart';
+import '../../utils/app_assets.dart';
 
 class SignInPage extends StatelessWidget {
   const SignInPage({super.key});
@@ -23,7 +23,8 @@ class SignInPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
 
-                SvgPicture.asset("assets/images/Frame 1.svg", height: 70),
+                // App Logo
+                SvgPicture.asset(AppAssets.logo, height: 70),
                 const SizedBox(height: 20),
 
 
@@ -83,11 +84,14 @@ class SignInPage extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Expanded(child: Image.asset("assets/images/p1.png", height: 130, fit: BoxFit.cover)),
+          // Image 1
+          Expanded(child: Image.asset(AppAssets.authImage1, height: 130, fit: BoxFit.cover)),
           const SizedBox(width: 4),
-          Expanded(child: Image.asset('assets/images/p2.png', height: 130, fit: BoxFit.cover)),
+          // Image 2
+          Expanded(child: Image.asset(AppAssets.authImage2, height: 130, fit: BoxFit.cover)),
           const SizedBox(width: 4),
-          Expanded(child: Image.asset('assets/images/p3.png', height: 130, fit: BoxFit.cover)),
+          // Image 3
+          Expanded(child: Image.asset(AppAssets.authImage3, height: 130, fit: BoxFit.cover)),
         ],
       ),
     );
@@ -101,7 +105,8 @@ class SignInPage extends StatelessWidget {
           height: 50,
           child: OutlinedButton.icon(
             onPressed: () {},
-            icon: Image.asset("assets/images/goog.png", height: 22),
+            // Google Icon
+            icon: Image.asset(AppAssets.googleIcon, height: 22),
             label: const Text("Sign in with Google", style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.w500)),
             style: OutlinedButton.styleFrom(
               backgroundColor: const Color(0x161B1F),

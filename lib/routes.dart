@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
-import '../screens/home_screens.dart';
-import '../screens/sign_in_page.dart';
-import '../screens/sign_up_page.dart';
+import 'presentation/screens/home_screens.dart';
+import 'presentation/screens/sign_in_page.dart';
+import 'presentation/screens/sign_up_page.dart';
 
 
 class AppRoutes {

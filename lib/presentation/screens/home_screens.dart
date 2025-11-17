@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../utils/core/app_theme.dart';
-import '../utils/core/routes.dart';
+import '../../utils/app_theme.dart';
+import '../../routes.dart';
+import '../../utils/app_assets.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -10,7 +11,7 @@ class HomePage extends StatelessWidget {
     Navigator.pushNamedAndRemoveUntil(
       context,
       AppRoutes.signIn,
-      (route) => false,
+          (route) => false,
     );
   }
 
@@ -84,7 +85,7 @@ class HomePage extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(40),
               child: Image.asset(
-                "assets/images/user.png",
+                AppAssets.userImage,
                 width: 45,
                 height: 45,
                 fit: BoxFit.cover,
@@ -194,11 +195,11 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _statCard(
-    String title,
-    String value,
-    String change,
-    Color changeColor,
-  ) {
+      String title,
+      String value,
+      String change,
+      Color changeColor,
+      ) {
     return Expanded(
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 6),
@@ -243,22 +244,23 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _buildExerciseButtons() {
+    // AppAssets
     final exercises = [
-      {"label": "Freehand", "icon": "assets/icons/Freehand.svg"},
-      {"label": "Walk", "icon": "assets/icons/Freehand.svg"},
-      {"label": "Run", "icon": "assets/icons/step.svg"},
-      {"label": "Swim", "icon": "assets/icons/Swim.svg"},
-      {"label": "Cycling", "icon": "assets/icons/Cycling.svg"},
-      {"label": "Yoga", "icon": "assets/icons/Yoga.svg"},
+      {"label": "Freehand", "icon": AppAssets.freehandIcon},
+      {"label": "Walk", "icon": AppAssets.stepIcon},
+      {"label": "Run", "icon": AppAssets.stepIcon},
+      {"label": "Swim", "icon": AppAssets.swimIcon},
+      {"label": "Cycling", "icon": AppAssets.cyclingIcon},
+      {"label": "Yoga", "icon": AppAssets.yogaIcon},
     ];
 
     return Wrap(
       spacing: 14,
       runSpacing: 17,
       children:
-          exercises
-              .map((e) => _buildExerciseButton(e["label"]!, e["icon"]!))
-              .toList(),
+      exercises
+          .map((e) => _buildExerciseButton(e["label"]!, e["icon"]!))
+          .toList(),
     );
   }
 
@@ -295,7 +297,7 @@ class HomePage extends StatelessWidget {
         color: AppTheme.inputFieldColor,
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Image.asset("assets/images/chart.png"),
+      child: Image.asset(AppAssets.chart),
     );
   }
 

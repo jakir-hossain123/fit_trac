@@ -1,41 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../utils/auth_button.dart';
-import '../utils/core/app_theme.dart';
-import '../utils/core/routes.dart';
+import '../../utils/app_assets.dart';
+import '../../utils/app_theme.dart';
+import '../../routes.dart';
 import '../utils/custom_text_field.dart';
 
-
-class SignUpPage extends StatefulWidget {
+class SignUpPage extends StatelessWidget {
   const SignUpPage({super.key});
 
-  @override
-  State<SignUpPage> createState() => _SignUpPageState();
-}
-
-class _SignUpPageState extends State<SignUpPage> {
-  final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
-  final _dobController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-
-  void _handleSignUp() {
-    if (_passwordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Passwords do not match.")),
-      );
-      return;
-    }
-
+  void _handleSignUp(BuildContext context) {
     Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (route) => false);
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -44,46 +23,44 @@ class _SignUpPageState extends State<SignUpPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SvgPicture.asset("assets/images/Frame 1.svg", height: 70),
+                // App Logo
+                SvgPicture.asset(AppAssets.logo, height: 70),
                 const SizedBox(height: 25),
 
-                CustomTextField(labelText: "First Name", controller: _firstNameController),
+                // Input Fields
+                const CustomTextField(labelText: "First Name"),
                 const SizedBox(height: 16),
-                CustomTextField(labelText: "Last Name", controller: _lastNameController),
+                const CustomTextField(labelText: "Last Name"),
                 const SizedBox(height: 16),
-                CustomTextField(
+                const CustomTextField(
                   labelText: "Date of Birth",
-                  controller: _dobController,
-                  suffixIcon: const Icon(Icons.calendar_today_outlined, color: Colors.white54),
+                  suffixIcon: Icon(Icons.calendar_today_outlined, color: Colors.white54),
                 ),
                 const SizedBox(height: 16),
-                CustomTextField(
+                const CustomTextField(
                   labelText: "Email",
-                  controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                 ),
                 const SizedBox(height: 16),
-                CustomTextField(
+                const CustomTextField(
                   labelText: "Password",
-                  controller: _passwordController,
                   obscureText: true,
-                  suffixIcon: const Icon(Icons.visibility_off_outlined, color: Colors.white54),
+                  suffixIcon: Icon(Icons.visibility_off_outlined, color: Colors.white54),
                 ),
                 const SizedBox(height: 16),
-                CustomTextField(
+                const CustomTextField(
                   labelText: "Confirm Password",
-                  controller: _confirmPasswordController,
                   obscureText: true,
-                  suffixIcon: const Icon(Icons.visibility_off_outlined, color: Colors.white54),
+                  suffixIcon: Icon(Icons.visibility_off_outlined, color: Colors.white54),
                 ),
                 const SizedBox(height: 25),
 
+                // Sign Up Button
                 AuthButton(
                   text: "Sign Up",
-                  onPressed: _handleSignUp,
+                  onPressed: () => _handleSignUp(context),
                 ),
                 const SizedBox(height: 20),
-
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -91,6 +68,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     const Text("Already have any account? ", style: TextStyle(color: Colors.white70)),
                     GestureDetector(
                       onTap: () {
+                        // Navigates back to SignInPage (since it's usually the previous route)
                         Navigator.pop(context);
                       },
                       child: const Text("Login", style: TextStyle(color: AppTheme.primaryTeal, fontWeight: FontWeight.bold)),
