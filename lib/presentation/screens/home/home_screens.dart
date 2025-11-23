@@ -4,8 +4,38 @@ import '../../utils/app_theme.dart';
 import '../../routes.dart';
 import '../../utils/app_assets.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _selectedIndex = 0;
+
+  static final List<Widget> _widgetOptions = <Widget>[
+    //  Home Page Content
+    const _HomeContent(),
+    // Stats Page Content
+    const Center(child: Text("📊 Statistics Page", style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold))),
+    // 2: Profile Page Content
+    const Center(child: Text("👤 Profile Page", style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold))),
+    // 3: Map View Placeholder
+    const SizedBox.shrink(),
+  ];
+
+
+
+  void _onItemTapped(int index) {
+    if (index == 3) {
+      Navigator.of(context).pushNamed(AppRoutes.walkPage);
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+  }
 
   void _handleGoToSignIn(BuildContext context) {
     Navigator.pushNamedAndRemoveUntil(
@@ -17,48 +47,45 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool showFloatingButton = _selectedIndex == 0;
+
     return Scaffold(
       backgroundColor: AppTheme.primaryDarkColor,
+
+      floatingActionButton: showFloatingButton ? Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          // 1. Walk Progress Page
+          FloatingActionButton(
+            heroTag: 'progressBtn',
+            onPressed: () {
+              Navigator.of(context).pushNamed(AppRoutes.walkProgressPage);
+            },
+            backgroundColor: Colors.teal.shade700,
+            tooltip: 'Go to Progress',
+            child: const Icon(Icons.show_chart, size: 28, color: Colors.white),
+          ),
+          const SizedBox(height: 16),
+
+          // 2. Walk Map Page
+          FloatingActionButton(
+            heroTag: 'mapBtn',
+            onPressed: () {
+              Navigator.of(context).pushNamed(AppRoutes.walkPage);
+            },
+            backgroundColor: Colors.teal,
+            tooltip: 'Go to Walk Map',
+            child: const Icon(Icons.map, size: 28, color: Colors.white),
+          ),
+        ],) : null,
+
       body: SafeArea(
         child: Stack(
           children: [
-            SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeader(context),
-                  const SizedBox(height: 25),
-                  _buildDailyGoalCard(),
-                  const SizedBox(height: 25),
-                  _buildStatsRow(),
-                  const SizedBox(height: 25),
-                  const Text(
-                    "Start Exercise",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  _buildExerciseButtons(),
-                  const SizedBox(height: 30),
-                  const Text(
-                    "Weekly Progress",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  _buildWeeklyProgressChart(),
-                ],
-              ),
-            ),
+            _widgetOptions.elementAt(_selectedIndex),
 
-            // SIGN OUT/NAVIGATE BUTTON
+
             Positioned(
               top: 15,
               right: 5,
@@ -71,12 +98,86 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
+
       bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
 
+  Widget _buildBottomNavigationBar() {
+    return BottomNavigationBar(
+      backgroundColor: AppTheme.inputFieldColor,
+      selectedItemColor: AppTheme.primaryTeal,
+      unselectedItemColor: Colors.white54,
+      showUnselectedLabels: true,
 
-  Widget _buildHeader(BuildContext context) {
+      currentIndex: _selectedIndex,
+      onTap: _onItemTapped,
+
+      items: const [
+        BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "Home"),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.bar_chart_outlined),
+          label: "Stats",
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person_outline),
+          label: "Profile",
+        ),
+        BottomNavigationBarItem(icon: Icon(Icons.map),
+            label: "go_to_map"
+        )
+      ],
+    );
+  }
+}
+
+
+
+class _HomeContent extends StatelessWidget {
+  const _HomeContent({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeader(),
+          const SizedBox(height: 25),
+          _buildDailyGoalCard(),
+          const SizedBox(height: 25),
+          _buildStatsRow(),
+          const SizedBox(height: 25),
+          const Text(
+            "Start Exercise",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+          _buildExerciseButtons(),
+          const SizedBox(height: 30),
+          const Text(
+            "Weekly Progress",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+          _buildWeeklyProgressChart(),
+          const SizedBox(height: 80),
+        ],
+      ),
+    );
+  }
+
+
+  Widget _buildHeader() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -111,7 +212,10 @@ class HomePage extends StatelessWidget {
             ),
           ],
         ),
-        Icon(Icons.notifications_none, size: 30, color: Colors.teal.shade800),
+        Padding(
+          padding: const EdgeInsets.only(top: 8.0, right: 40.0),
+          child: Icon(Icons.notifications_none, size: 30, color: Colors.teal.shade800),
+        ),
       ],
     );
   }
@@ -298,26 +402,6 @@ class HomePage extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Image.asset(AppAssets.chart),
-    );
-  }
-
-  Widget _buildBottomNavigationBar() {
-    return BottomNavigationBar(
-      backgroundColor: AppTheme.inputFieldColor,
-      selectedItemColor: AppTheme.primaryTeal,
-      unselectedItemColor: Colors.white54,
-      showUnselectedLabels: true,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "Home"),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.bar_chart_outlined),
-          label: "Stats",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person_outline),
-          label: "Profile",
-        ),
-      ],
     );
   }
 }
