@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-
-
 class StatData {
   final String value;
   final String label;
@@ -17,40 +15,51 @@ class StatData {
   });
 }
 
-final List<StatData> walkStats = [
-  StatData(
-    value: '1.6 km',
-    label: 'Distance',
-    svgPath: 'assets/icons/distance.svg',
-    color: Colors.blueAccent,
-  ),
-  StatData(
-    value: '2165',
-    label: 'Steps',
-    svgPath: 'assets/icons/vector.svg',
-    color: Colors.lightBlue,
-  ),
-  StatData(
-    value: '6 min',
-    label: 'Time',
-    svgPath: 'assets/icons/time.svg',
-    color: Colors.amber,
-  ),
-  StatData(
-    value: '108',
-    label: 'Calories',
-    svgPath: 'assets/icons/calories.svg',
-    color: Colors.redAccent,
-  ),
-];
-
-
 
 class WalkStatsGrid extends StatelessWidget {
-  const WalkStatsGrid({super.key});
+  final double distanceKm;
+  final String elapsedTime;
+
+  const WalkStatsGrid({
+    super.key,
+    required this.distanceKm,
+    required this.elapsedTime, required double distance,
+  });
 
   @override
   Widget build(BuildContext context) {
+    // Steps & Calories Calculation
+    final int steps = (distanceKm * 1300).toInt();
+    final int calories = (distanceKm * 60).toInt();
+
+    // Dynamic Stat List
+    final List<StatData> walkStats = [
+      StatData(
+        value: '${distanceKm.toStringAsFixed(2)} km',
+        label: 'Distance',
+        svgPath: 'assets/icons/distance.svg',
+        color: Colors.blueAccent,
+      ),
+      StatData(
+        value: steps.toString(),
+        label: 'Steps',
+        svgPath: 'assets/icons/vector.svg',
+        color: Colors.lightBlue,
+      ),
+      StatData(
+        value: elapsedTime,
+        label: 'Time',
+        svgPath: 'assets/icons/time.svg',
+        color: Colors.amber,
+      ),
+      StatData(
+        value: calories.toString(),
+        label: 'Calories',
+        svgPath: 'assets/icons/calories.svg',
+        color: Colors.redAccent,
+      ),
+    ];
+
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -73,7 +82,6 @@ class WalkStatsGrid extends StatelessWidget {
     );
   }
 }
-
 
 
 class StatCard extends StatelessWidget {
@@ -113,7 +121,6 @@ class StatCard extends StatelessWidget {
           const SizedBox(height: 2),
           Row(
             children: [
-              // SVG Image
               SvgPicture.asset(
                 svgPath,
                 colorFilter: ColorFilter.mode(color, BlendMode.srcIn),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class WalkProgressBar extends StatelessWidget {
-  const WalkProgressBar({super.key});
+  const WalkProgressBar({super.key, required double progressValue, required String walkType});
 
 
   final double progressValue = 0.6;
