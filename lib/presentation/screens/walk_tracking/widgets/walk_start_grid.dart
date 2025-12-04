@@ -19,18 +19,25 @@ class StatData {
 class WalkStatsGrid extends StatelessWidget {
   final double distanceKm;
   final String elapsedTime;
+  final int steps;
+  final bool isPedometerAvailable;
 
   const WalkStatsGrid({
     super.key,
     required this.distanceKm,
-    required this.elapsedTime, required double distance,
+    required this.elapsedTime,
+    required this.steps,
+    required this.isPedometerAvailable,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Steps & Calories Calculation
-    final int steps = (distanceKm * 1300).toInt();
+    // Calories Calculation (Example: 60 kcal per km)
     final int calories = (distanceKm * 60).toInt();
+
+    // Steps to display (if pedometer is not available, calculate based on distance)
+    final int stepsToDisplay = isPedometerAvailable ? steps : (distanceKm * 1300).toInt();
+
 
     // Dynamic Stat List
     final List<StatData> walkStats = [
@@ -41,8 +48,8 @@ class WalkStatsGrid extends StatelessWidget {
         color: Colors.blueAccent,
       ),
       StatData(
-        value: steps.toString(),
-        label: 'Steps',
+        value: stepsToDisplay.toString(),
+        label: isPedometerAvailable ? 'Steps' : 'Est. Steps', // Differentiate if pedometer is used
         svgPath: 'assets/icons/vector.svg',
         color: Colors.lightBlue,
       ),

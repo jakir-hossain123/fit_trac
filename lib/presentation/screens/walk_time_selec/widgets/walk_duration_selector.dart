@@ -60,7 +60,7 @@ class _WalkDurationSelectorState extends State<WalkDurationSelector> {
               ),
             );
           },
-          childCount: 16,
+          childCount: 180,
         ),
       ),
     );

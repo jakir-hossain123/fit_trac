@@ -1,14 +1,20 @@
+import 'package:fit_trac/presentation/providers/run_provider.dart';
+import 'package:fit_trac/presentation/providers/walk_provider.dart';
+import 'package:fit_trac/services/tracking_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fit_trac/presentation/providers/auth_provider.dart';
 import 'package:fit_trac/utils/app_theme.dart';
 import 'package:fit_trac/routes.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeService();
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => WalkProvider()),
+        ChangeNotifierProvider(create: (_) => RunProvider()),
       ],
       child: const MyApp(),
     ),

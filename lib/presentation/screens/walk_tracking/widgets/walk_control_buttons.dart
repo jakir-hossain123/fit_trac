@@ -38,7 +38,7 @@ class WalkControlButtons extends StatelessWidget {
           ControlButton(
             icon: startIcon,
             label: startLabel,
-            backgroundColor: Colors.green[700]!,
+            backgroundColor: Colors.teal[700]!,
             isFullWidth: true,
             onPressed: onStart,
           ),
@@ -82,7 +82,7 @@ class WalkControlButtons extends StatelessWidget {
   }
 }
 
-//  Modern Design ControlButton
+// Modern Design ControlButton
 class ControlButton extends StatelessWidget {
   final IconData icon;
   final String label;

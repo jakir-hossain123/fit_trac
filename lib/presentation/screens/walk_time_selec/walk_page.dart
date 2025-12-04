@@ -1,12 +1,13 @@
-import 'package:fit_trac/presentation/screens/walk/widgets/walk_activity_card.dart';
-import 'package:fit_trac/presentation/screens/walk/widgets/walk_buttons.dart';
-import 'package:fit_trac/presentation/screens/walk/widgets/walk_distance_button.dart';
+import 'package:fit_trac/presentation/screens/walk_time_selec/widgets/walk_activity_card.dart';
+import 'package:fit_trac/presentation/screens/walk_time_selec/widgets/walk_buttons.dart';
+import 'package:fit_trac/presentation/screens/walk_time_selec/widgets/walk_distance_button.dart';
+import 'package:fit_trac/presentation/screens/walk_time_selec/widgets/walk_distance_selector.dart';
+import 'package:fit_trac/presentation/screens/walk_time_selec/widgets/walk_duration_selector.dart';
+import 'package:fit_trac/presentation/screens/walk_time_selec/widgets/walk_info_card.dart';
+import 'package:fit_trac/presentation/screens/walk_time_selec/widgets/walk_tab_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fit_trac/presentation/screens/walk/widgets/walk_duration_selector.dart';
-import 'package:fit_trac/presentation/screens/walk/widgets/walk_info_card.dart';
-import 'package:fit_trac/presentation/screens/walk/widgets/walk_tab_selector.dart';
-import 'package:fit_trac/presentation/screens/walk/widgets/walk_distance_selector.dart';
+import '../../../routes.dart';
 import '../../providers/walk_provider.dart';
 
 class WalkScreen extends StatefulWidget {
@@ -47,9 +48,9 @@ class _WalkScreenState extends State<WalkScreen> {
         backgroundColor: const Color(0xFF0F1418),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushNamed(context, AppRoutes.home);
           },
         ),
         title: const Text(

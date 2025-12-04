@@ -7,6 +7,9 @@ class CustomTextField extends StatelessWidget {
   final Widget? suffixIcon;
   final TextEditingController? controller;
   final TextInputType? keyboardType;
+  final String? Function(String?)? validator;
+  final bool enabled;
+
 
   const CustomTextField({
     super.key,
@@ -15,6 +18,8 @@ class CustomTextField extends StatelessWidget {
     this.suffixIcon,
     this.controller,
     this.keyboardType,
+    this.validator,
+    this.enabled = true,
   });
 
   @override

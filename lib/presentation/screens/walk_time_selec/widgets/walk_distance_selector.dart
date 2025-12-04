@@ -16,17 +16,20 @@ class WalkDistanceSelector extends StatefulWidget {
 
 class _WalkDistanceSelectorState extends State<WalkDistanceSelector> {
   late FixedExtentScrollController _scrollController;
-  // Options in meters, increasing in steps
-  final List<int> _distanceOptions = [
-    500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 2000, 3000, 5000, 10000
-  ];
+
+  final int minDistance = 100;
+  final int maxDistance = 20000;
+  final int step = 100;
+
+  late final int totalItems = (maxDistance - minDistance) ~/ step + 1;
 
   @override
   void initState() {
     super.initState();
-    final initialIndex = _distanceOptions.indexOf(widget.selectedDistance);
+    final initialIndex = (widget.selectedDistance - minDistance) ~/ step;
+
     _scrollController = FixedExtentScrollController(
-        initialItem: initialIndex.clamp(0, _distanceOptions.length - 1)
+        initialItem: initialIndex.clamp(0, totalItems - 1)
     );
   }
 
@@ -34,6 +37,14 @@ class _WalkDistanceSelectorState extends State<WalkDistanceSelector> {
   void dispose() {
     _scrollController.dispose();
     super.dispose();
+  }
+
+  String _getDisplayValue(int value) {
+    if (value >= 1000 && value % 100 == 0) {
+      double km = value / 1000;
+      return '${km.toStringAsFixed(km % 1 == 0 ? 0 : 1)} Km';
+    }
+    return value.toString();
   }
 
   @override
@@ -45,26 +56,26 @@ class _WalkDistanceSelectorState extends State<WalkDistanceSelector> {
         controller: _scrollController,
         physics: const FixedExtentScrollPhysics(),
         onSelectedItemChanged: (index) {
-          widget.onDistanceChanged(_distanceOptions[index]);
+          final selectedValue = minDistance + index * step;
+          widget.onDistanceChanged(selectedValue);
         },
         childDelegate: ListWheelChildBuilderDelegate(
           builder: (context, index) {
-            final value = _distanceOptions[index];
+            final value = minDistance + index * step;
             final isSelected = value == widget.selectedDistance;
 
             return Center(
               child: Text(
-                value.toString(),
+                _getDisplayValue(value),
                 style: TextStyle(
                   fontSize: isSelected ? 28 : 20,
                   color: isSelected ? Colors.white : Colors.white38,
-                  fontWeight:
-                  isSelected ? FontWeight.bold : FontWeight.normal,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 ),
               ),
             );
           },
-          childCount: _distanceOptions.length,
+          childCount: totalItems,
         ),
       ),
     );

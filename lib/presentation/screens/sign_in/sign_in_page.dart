@@ -1,18 +1,57 @@
+import 'package:fit_trac/presentation/screens/sign_in/widgets/image_carousel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../utils/auth_button.dart';
-import '../utils/custom_text_field.dart';
-import '../../utils/app_theme.dart';
-import '../../routes.dart';
-import '../../utils/app_assets.dart';
 
-class SignInPage extends StatelessWidget {
+import '../../../utils/app_theme.dart';
+import '../../../routes.dart';
+import '../../../utils/app_assets.dart';
+import '../../sign_in-sign_up-utils/auth_button.dart';
+import '../../sign_in-sign_up-utils/custom_text_field.dart';
+import 'widgets/social_auth_buttons.dart';
+
+class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
+
+  @override
+  State<SignInPage> createState() => _SignInPageState();
+}
+
+class _SignInPageState extends State<SignInPage> {
+  // Local state for interactive elements
+  bool _isPasswordVisible = false;
+  bool _isLoading = false;
+
+  // Controllers
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  void _handleSignIn() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    // Simulate network delay
+    await Future.delayed(const Duration(seconds: 2));
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (route) => false);
+    }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.primaryDarkColor,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -20,29 +59,58 @@ class SignInPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                // Logo
                 SvgPicture.asset(AppAssets.logo, height: 70),
+
                 const SizedBox(height: 20),
+
+                // THE IMAGE CAROUSEL
+                const ImageCarousel(),
+
                 const SizedBox(height: 30),
-                const CustomTextField(
+
+                // Email Field
+                CustomTextField(
                   labelText: "Email",
                   keyboardType: TextInputType.emailAddress,
+                  controller: _emailController,
                 ),
                 const SizedBox(height: 16),
-                const CustomTextField(
+
+                // Password Field
+                CustomTextField(
                   labelText: "Password",
-                  obscureText: true,
-                  suffixIcon: Icon(Icons.visibility_off_outlined, color: Colors.white54),
+                  controller: _passwordController,
+                  obscureText: !_isPasswordVisible,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off_outlined,
+                        color: Colors.white54
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
+                  ),
                 ),
                 const SizedBox(height: 24),
+
+                // Sign In Button
                 AuthButton(
                   text: "Sign In",
-                  onPressed: () {
-                    Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (route) => false);
-                  },
+                  isLoading: _isLoading,
+                  onPressed: _handleSignIn,
                 ),
+
                 const SizedBox(height: 20),
-                _buildSocialAuthButtons(),
+
+                // Social Buttons
+                const SocialAuthButtons(),
+
                 const SizedBox(height: 20),
+
+                // Register Row
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -55,53 +123,12 @@ class SignInPage extends StatelessWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: 20),
               ],
             ),
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildSocialAuthButtons() {
-    return Column(
-      children: [
-        SizedBox(
-          width: double.infinity,
-          height: 50,
-          child: OutlinedButton.icon(
-            onPressed: () {},
-            icon: Image.asset(AppAssets.googleIcon, height: 22),
-            label: const Text("Sign in with Google", style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.w500)),
-            style: OutlinedButton.styleFrom(
-              backgroundColor: const Color(0x161B1F),
-              side: const BorderSide(color: Color(0x20262B), width: 1),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-              elevation: 3,
-              shadowColor: Colors.black.withOpacity(0.4),
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          width: double.infinity,
-          height: 50,
-          child: OutlinedButton.icon(
-            onPressed: () {},
-            icon: const FaIcon(FontAwesomeIcons.facebook, size: 20, color: Color(0xFF1877F2)),
-            label: const Text("Sign in with Facebook", style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.w500)),
-            style: OutlinedButton.styleFrom(
-              backgroundColor: const Color(0x161B1F),
-              side: const BorderSide(color: Color(0x161B1F), width: 1),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-              elevation: 3,
-              shadowColor: Colors.black.withOpacity(0.4),
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

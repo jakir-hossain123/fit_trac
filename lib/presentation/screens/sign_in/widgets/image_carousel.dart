@@ -1,14 +1,12 @@
-// ফাইল: lib/pages/sign_in/widgets/image_carousel.dart
-
 import 'package:flutter/material.dart';
 import '../../../../utils/app_assets.dart';
 import 'curved_image_clipper.dart';
+
 class ImageCarousel extends StatelessWidget {
   const ImageCarousel({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // নিশ্চিত করুন AppAssets এ সঠিক পাথ আছে
     const imagePaths = [
       AppAssets.authImage1,
       AppAssets.authImage2,
@@ -23,7 +21,7 @@ class ImageCarousel extends StatelessWidget {
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: index == 1 ? 4.0 : 0.0),
             child: ClipPath(
-              clipper: _getClipper(index), // <--- _getClipper() ফাংশন ব্যবহার
+              clipper: _getClipper(index),
               child: Image.asset(
                 path,
                 fit: BoxFit.cover,
@@ -37,4 +35,11 @@ class ImageCarousel extends StatelessWidget {
       }).toList(),
     );
   }
+}
+
+
+CustomClipper<Path> _getClipper(int index) {
+  if (index == 0) return LeftImageClipper();
+  if (index == 1) return CenterImageClipper();
+  return RightImageClipper();
 }

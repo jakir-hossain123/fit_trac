@@ -26,7 +26,7 @@ environment:
 # consider running `flutter pub upgrade --major-versions`. Alternatively,
 # dependencies can be manually updated by changing the version numbers below to
 # the latest version available on pub.dev. To see which dependencies have newer
-# versions available, run `flutter pub outdated`.
+# versions available, walk_tracking `flutter pub outdated`.
 dependencies:
   flutter:
     sdk: flutter
@@ -38,6 +38,20 @@ dependencies:
   flutter_svg: ^2.2.2
   get_it: ^9.0.5
   provider: ^6.1.5+1
+  firebase_core: ^4.2.1
+  firebase_auth: ^6.1.2
+  google_sign_in: ^7.2.0
+  cloud_firestore: ^6.1.0
+  intl: ^0.20.2
+  google_nav_bar: ^5.0.7
+  google_maps_flutter: ^2.14.0
+  geolocator: ^14.0.2
+  pedometer: ^4.1.1
+  permission_handler: ^12.0.1
+  flutter_background_service: ^5.1.0
+  shared_preferences: ^2.5.3
+  awesome_notifications: ^0.10.1
+  flutter_background_service_android: ^6.3.1
 
 dev_dependencies:
   flutter_test:

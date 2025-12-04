@@ -12,7 +12,7 @@ class TrackingGoal {
   factory TrackingGoal.instant() {
     return TrackingGoal(
       type: GoalType.instant,
-      targetValue: 10, // 10 মিনিট
+      targetValue: 10,
     );
   }
 }

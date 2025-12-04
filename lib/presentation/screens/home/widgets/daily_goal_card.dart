@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../utils/app_theme.dart';
+import '../../../../../utils/app_theme.dart';
 
 class DailyGoalCard extends StatelessWidget {
   const DailyGoalCard({super.key});

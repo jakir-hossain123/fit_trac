@@ -48,7 +48,7 @@ class StartInstantWalkButton extends StatelessWidget {
                 ),
                 SizedBox(height: 2),
                 Text(
-                  "Instant warm-up walk",
+                  "Instant warm-up walk_time_selec",
                   style: TextStyle(color: Colors.white70, fontSize: 13),
                 ),
               ],
@@ -82,7 +82,7 @@ class StartTimedWalkButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: AppTheme.primaryTeal, // Button background color
+          color: AppTheme.primaryTeal,
           borderRadius: BorderRadius.circular(25),
         ),
         alignment: Alignment.center,

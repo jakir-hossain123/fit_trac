@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 class AppTheme {
   static const Color primaryDarkColor = Color(0xFF111518);
   static const Color inputFieldColor = Color(0xFF1E2429);
-  static const Color primaryTeal = Colors.teal;
-
+  static const Color primaryTeal = Color(0xFF175E5E);
   static final ThemeData darkTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
