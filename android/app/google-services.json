@@ -12,7 +12,12 @@
           "package_name": "com.example.fit_trac"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "332696806710-brbc4s2u1qigeslspm0438r52osg3kj7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAzfSceymF469gzAnfm8OZ5HKBJFlqvpBo"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "332696806710-brbc4s2u1qigeslspm0438r52osg3kj7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "332696806710-l2lr6im3la4nkibo6424qd5ufqb8sgaf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.fitTrac"
+              }
+            }
+          ]
         }
       }
     }

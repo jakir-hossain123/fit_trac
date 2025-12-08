@@ -1,10 +1,8 @@
 plugins {
     id("com.android.application")
-    // START: FlutterFire Configuration
     id("com.google.gms.google-services")
-    // END: FlutterFire Configuration
+    id("com.google.firebase.crashlytics")
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
@@ -13,12 +11,10 @@ android {
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
-    // ✅ Java Compatibility 1.8 (Kotlin DSL syntax)
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
 
-        // ✅ Kotlin-DSL friendly property name
         isCoreLibraryDesugaringEnabled = true
     }
 
@@ -47,9 +43,12 @@ flutter {
 
 dependencies {
     implementation("com.google.android.gms:play-services-auth:21.4.0")
+
     implementation(platform("com.google.firebase:firebase-bom:34.6.0"))
+
     implementation("com.google.firebase:firebase-auth")
 
-    // ✅ Desugaring dependency (Kotlin DSL call)
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+    implementation("com.google.firebase:firebase-analytics")
+
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 }

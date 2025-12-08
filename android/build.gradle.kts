@@ -1,7 +1,5 @@
-// Project-level build.gradle.kts (Kotlin DSL)
-
 buildscript {
-    val kotlin_version by extra("1.9.22")
+    val kotlinVersion by extra("2.0.0")
 
     repositories {
         google()
@@ -9,16 +7,14 @@ buildscript {
     }
 
     dependencies {
-        // ✅ Android Gradle Plugin
-        classpath("com.android.tools.build:gradle:8.4.1")
-
-        // ✅ Kotlin Gradle Plugin
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
-
-        // FlutterFire (if needed)
-        classpath("com.google.gms:google-services:4.4.2")
+        // 1. Android Gradle Plugin
+        classpath("com.android.tools.build:gradle:8.3.2")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+        classpath("com.google.gms:google-services:4.4.1")
+        classpath("com.google.firebase:firebase-crashlytics-gradle:2.9.9")
     }
 }
+
 
 allprojects {
     repositories {
@@ -27,7 +23,6 @@ allprojects {
     }
 }
 
-// ↓↓↓ Flutter Build Directory Override (Keep this unchanged)
 val newBuildDir: Directory = rootProject.layout.buildDirectory
     .dir("../../build")
     .get()

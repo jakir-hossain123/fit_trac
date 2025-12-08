@@ -76,8 +76,10 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: AppTheme.primaryDarkColor,
 
       body: SafeArea(
+
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
+
 
       bottomNavigationBar: Container(
         color: AppTheme.inputFieldColor,

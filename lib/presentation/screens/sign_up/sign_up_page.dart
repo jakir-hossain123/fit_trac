@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:fit_trac/models/app_user.dart';
@@ -20,7 +19,6 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
   // 1. Controllers and State
-  final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
   final _formKey = GlobalKey<FormState>();
 

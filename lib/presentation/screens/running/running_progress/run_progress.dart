@@ -9,10 +9,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:fit_trac/services/tracking_service.dart';
 import '../../../../../routes.dart';
 
+// Constants
 const double _caloriesPerKm = 70.0;
-// Instant Run
 const int _defaultInstantRunGoalSeconds = 10 * 60;
-
+const Color _darkBackground = Color(0xFF0F1418);
 
 class RunProgress extends StatefulWidget {
   const RunProgress({super.key});
@@ -25,7 +25,7 @@ class _RunProgressState extends State<RunProgress> {
   // Map View Key
   final GlobalKey<RunMapViewState> _mapViewKey = GlobalKey<RunMapViewState>();
 
-  //  Tracking State Variables
+  // Tracking State Variables
   double _totalDistanceKm = 0.0;
   int _totalSteps = 0;
   int _timeElapsedSeconds = 0;
@@ -37,24 +37,42 @@ class _RunProgressState extends State<RunProgress> {
   // Background Service Communication
   final service = FlutterBackgroundService();
   StreamSubscription? _serviceStreamSubscription;
-
+  StreamSubscription? _stopEventSubscription;
 
   @override
   void initState() {
     super.initState();
     _listenToServiceUpdates();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _handleStart();
+    _listenForStopConfirmation();
+  }
+
+
+  // Navigates to the summary page after the background service confirms data is saved.
+  void _listenForStopConfirmation() {
+    _stopEventSubscription = service.on('tracking_stopped_and_saved').listen((data) async {
+      if (data != null && data['readyToNavigate'] == true) {
+
+        // 🛑 পরিবর্তন: SharedPreferences থেকে ডেটা লোড করার প্রয়োজন নেই।
+        // সামারি পেজ নিজেই getFinalTrackingData() ব্যবহার করে লোড করবে।
+        // final finalData = await getFinalTrackingData(); // REMOVED
+
+        // Navigate to summary page (Push Replacement ensures the user cannot return to the running screen easily)
+        if (mounted) {
+          Navigator.of(context).pushReplacementNamed(
+            AppRoutes.runningSummary,
+            // 🛑 পরিবর্তন: arguments বাদ দেওয়া হলো।
+            // arguments: { ... } // REMOVED
+          );
+        }
+      }
     });
   }
 
   void _listenToServiceUpdates() {
     _serviceStreamSubscription = service.on('update').listen((data) {
       if (data != null) {
-        print('✅ [Run] Service Update Received: Distance=${data['distance']}, Time=${data['time']}');
-
         setState(() {
-          _totalDistanceKm = data['distance'] ?? 0.0;
+          _totalDistanceKm = (data['distance'] as num?)?.toDouble() ?? 0.0;
           _timeElapsedSeconds = data['time'] ?? 0;
           _totalSteps = data['steps'] ?? 0;
 
@@ -71,22 +89,18 @@ class _RunProgressState extends State<RunProgress> {
     });
   }
 
-
   // Control Functions
 
   Future<void> _handleStart() async {
-
     // 1. Always attempt to start the service
     try {
-      await service.startService();
+      service.startService();
     } catch (e) {
-
+      // Handle error starting service if necessary
     }
 
     // Send command to service to start tracking
     service.invoke(COMMAND_START_TRACKING);
-
-
   }
 
   void _handlePause() {
@@ -101,30 +115,13 @@ class _RunProgressState extends State<RunProgress> {
     }
   }
 
-  void _handleStop() async {
+  // Stop command
+  void _handleStop() {
     service.invoke(COMMAND_STOP);
-
-    // Wait briefly for service to stop and save data
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    // Retrieve the final data from SharedPreferences
-    final finalData = await getFinalTrackingData();
-
-    // Navigate to summary using saved data
-    Navigator.of(context).pushReplacementNamed(
-      AppRoutes.runningSummary,
-      arguments: {
-        'distance': finalData['distance'],
-        'time': finalData['time'],
-        'steps': finalData['steps'],
-        'route': finalData['routePoints'],
-        'calories': finalData['distance'] * _caloriesPerKm,
-      },
-    );
   }
 
 
-  //Utility Functions
+  // Utility Functions
 
   String _formatTime(int totalSeconds) {
     final minutes = (totalSeconds ~/ 60).toString().padLeft(2, '0');
@@ -135,13 +132,12 @@ class _RunProgressState extends State<RunProgress> {
   @override
   void dispose() {
     _serviceStreamSubscription?.cancel();
+    _stopEventSubscription?.cancel(); // Cancel the new subscription
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    const Color darkBackground = Color(0xFF0F1418);
-
     // Instant Run
     double goalProgressValue = 0.0;
     String runTypeLabel = "Instant Run";
@@ -180,9 +176,9 @@ class _RunProgressState extends State<RunProgress> {
     ];
 
     return Scaffold(
-      backgroundColor: darkBackground,
+      backgroundColor: _darkBackground,
       appBar: AppBar(
-        backgroundColor: darkBackground,
+        backgroundColor: _darkBackground,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.white),

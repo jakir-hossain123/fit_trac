@@ -2,8 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
-import 'package:flutter_background_service_android/flutter_background_service_android.dart';
-import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:awesome_notifications/awesome_notifications.dart' hide NOTIFICATION_ID;
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:pedometer/pedometer.dart';
@@ -34,26 +33,6 @@ bool _isPedometerAvailable = true;
 //    Service Initialization
 Future<void> initializeService() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // AwesomeNotifications initialization remains the same
-  await AwesomeNotifications().initialize(
-    null,
-    [
-      NotificationChannel(
-        channelKey: NOTIFICATION_CHANNEL_ID,
-        channelName: NOTIFICATION_CHANNEL_NAME,
-        channelDescription: 'Used for fitness tracking background service',
-        importance: NotificationImportance.Low,
-        defaultColor: const Color(0xFF9D50DD),
-        ledColor: Colors.white,
-        channelShowBadge: false,
-        onlyAlertOnce: true,
-        groupKey: NOTIFICATION_GROUP_KEY,
-        locked: true,
-        defaultRingtoneType: DefaultRingtoneType.Notification,
-      )
-    ],
-    debug: true,
-  );
 
   final service = FlutterBackgroundService();
 
@@ -109,7 +88,6 @@ Future<void> _startLocationTracking(ServiceInstance service) async {
     permission = await Geolocator.requestPermission();
   }
   if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
-    print("Location permissions denied.");
     return;
   }
 
@@ -128,11 +106,7 @@ Future<void> _startLocationTracking(ServiceInstance service) async {
         distanceFilter: 1,
       ),
     ).listen((Position pos) => _updateTracking(pos, service),
-        onError: (e) {
-          print("Location Stream Error: $e");
-        }
     );
-    print("Location tracking started successfully.");
 
   } catch (e) {
     print("Failed to start location tracking or get initial position: $e");
@@ -218,10 +192,9 @@ Future<void> _startNewTracking(ServiceInstance service) async {
   _isTrackingPaused = false;
 
   // Start streams
-  await _startLocationTracking(service); // Await for permission checks and initial setup
+  _startLocationTracking(service); // await সরানো হয়েছে লোডিং স্পিড বাড়ানোর জন্য
   _startStepTracking(service);
   _startTimer(service);
-
   _sendTrackingData(service); // Initial data update to the UI
 }
 
@@ -246,7 +219,14 @@ void _stopAllTracking(ServiceInstance service) {
   _positionSubscription?.cancel();
   _stepCountSubscription?.cancel();
   AwesomeNotifications().cancel(NOTIFICATION_ID);
+
+  // 1. SharedPreferences-এ চূড়ান্ত ডেটা সেভ করুন
   _saveFinalTrackingData();
+
+  // 2. ✅ পরিবর্তন: নেভিগেট করার জন্য UI-কে নিশ্চিতকরণ ইভেন্ট পাঠান
+  service.invoke('tracking_stopped_and_saved', {'readyToNavigate': true});
+
+  // 3. সার্ভিস বন্ধ করুন
   service.stopSelf();
 }
 
@@ -262,26 +242,32 @@ void _sendTrackingData(ServiceInstance service) {
     'isPedometerAvailable': _isPedometerAvailable,
   };
 
+  // 1. UI-তে ডেটা প্রতি সেকেন্ডে পাঠান (এটি দ্রুত কাজ করে)
   service.invoke('update', data);
 
-  String dist = _totalDistance.toStringAsFixed(2);
-  int mins = _timeElapsedSeconds ~/ 60;
-  int secs = _timeElapsedSeconds % 60;
-  String timeStr = '${mins.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
-  String title = _isTrackingPaused ? 'FitTrac: Paused' : 'FitTrac: Running $dist km';
-  String content = 'Time: $timeStr | Steps: $_totalSteps';
+  // 2. নোটিফিকেশন আপডেট শুধুমাত্র প্রতি 3 সেকেন্ডে করুন:
+  // - যখন _timeElapsedSeconds 0 (প্রথমবার স্টার্ট), অথবা
+  // - যখন _timeElapsedSeconds 3-এর গুণিতক হবে।
+  if (_timeElapsedSeconds == 0 || _timeElapsedSeconds % 3 == 0) {
+    String dist = _totalDistance.toStringAsFixed(2);
+    int mins = _timeElapsedSeconds ~/ 60;
+    int secs = _timeElapsedSeconds % 60;
+    String timeStr = '${mins.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
+    String title = _isTrackingPaused ? 'FitTrac: Paused' : 'FitTrac: Running $dist km';
+    String content = 'Time: $timeStr | Steps: $_totalSteps';
 
-  AwesomeNotifications().createNotification(
-    content: NotificationContent(
-      id: NOTIFICATION_ID,
-      channelKey: NOTIFICATION_CHANNEL_ID,
-      title: title,
-      body: content,
-      notificationLayout: NotificationLayout.Default,
-      locked: true,
-      payload: {'data': 'tracking_session'},
-    ),
-  );
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: NOTIFICATION_ID,
+        channelKey: NOTIFICATION_CHANNEL_ID,
+        title: title,
+        body: content,
+        notificationLayout: NotificationLayout.Default,
+        locked: true,
+        payload: {'data': 'tracking_session'},
+      ),
+    );
+  }
 }
 
 // SharedPreferences Data

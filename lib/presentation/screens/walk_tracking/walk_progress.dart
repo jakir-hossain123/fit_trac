@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -9,6 +10,9 @@ import 'widgets/walk_control_buttons.dart';
 import 'widgets/walk_map_view.dart';
 import 'widgets/walk_progress_bar.dart';
 import 'widgets/walk_start_grid.dart';
+
+// Constants
+const Color _darkBackground = Color(0xFF0F1418);
 
 // Tracking state Enum
 enum TrackingState { initial, running, paused }
@@ -35,12 +39,13 @@ class _WalkProgressScreenState extends State<WalkProgressScreen> {
   //  Background Service Communication
   final service = FlutterBackgroundService();
   StreamSubscription? _serviceStreamSubscription;
-
+  StreamSubscription? _stopEventSubscription; // Added for safe stop handling
 
   @override
   void initState() {
     super.initState();
     _listenToServiceUpdates();
+    _listenForStopConfirmation(); // Listen for service confirmation before navigating
   }
 
   @override
@@ -57,24 +62,49 @@ class _WalkProgressScreenState extends State<WalkProgressScreen> {
     }
   }
 
+  // Listens for the explicit event from the background service
+  // after it has saved data and is ready for UI navigation.
+  void _listenForStopConfirmation() {
+    // Assuming the background service sends an event like 'tracking_stopped_and_saved'
+    _stopEventSubscription = service.on('tracking_stopped_and_saved').listen((data) async {
+      if (data != null && data['readyToNavigate'] == true) {
+
+        // 🛑 পরিবর্তন: এই লাইনটি আর প্রয়োজন নেই। WalkSummaryScreen নিজেই ডেটা লোড করবে।
+        // final finalData = await getFinalTrackingData(); // REMOVED
+
+        // Navigate to summary page
+        if (mounted) {
+          // ✅ পরিবর্তন: আর্গুমেন্ট ছাড়া নেভিগেট করুন।
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            AppRoutes.walkSummery,
+                (route) => false,
+            // arguments: finalData // REMOVED
+          );
+        }
+      }
+    });
+  }
+
   // function for share data from service
   void _listenToServiceUpdates() {
     _serviceStreamSubscription = service.on('update').listen((data) {
       if (data != null) {
         setState(() {
-          _currentDistanceKm = data['distance'] ?? 0.0;
+          _currentDistanceKm = (data['distance'] as num?)?.toDouble() ?? 0.0;
           _elapsedSeconds = data['time'] ?? 0;
           _currentSteps = data['steps'] ?? 0;
 
           final isRunning = data['isRunning'] ?? false;
           final isPaused = data['isPaused'] ?? false;
-          _isPedometerAvailable = data['isPedometerAvailable'] ?? true; // pedometer status
+          _isPedometerAvailable = data['isPedometerAvailable'] ?? true;
 
+          // State transition logic
           if (isRunning && !isPaused) {
             _currentState = TrackingState.running;
           } else if (isRunning && isPaused) {
             _currentState = TrackingState.paused;
           } else {
+            // Note: This 'initial' state should typically only happen right before starting/after stopping.
             _currentState = TrackingState.initial;
           }
 
@@ -95,14 +125,15 @@ class _WalkProgressScreenState extends State<WalkProgressScreen> {
 
   void _checkGoalCompletion() {
     if (_currentState == TrackingState.running && _trackingGoal != null) {
-      // Time Goal Check
+      // Time Goal Check: Target is in minutes, elapsed is in seconds
       if (_trackingGoal!.type == GoalType.time) {
         if (_elapsedSeconds >= _trackingGoal!.targetValue * 60) {
           _stopTracking(isGoalCompleted: true);
         }
       }
-      // Distance Goal Check
+      // Distance Goal Check: Target is in meters, current distance is in km
       else if (_trackingGoal!.type == GoalType.distance) {
+        // Convert km to meters for comparison: _currentDistanceKm * 1000
         if (_currentDistanceKm * 1000 >= _trackingGoal!.targetValue) {
           _stopTracking(isGoalCompleted: true);
         }
@@ -114,12 +145,13 @@ class _WalkProgressScreenState extends State<WalkProgressScreen> {
 
     // 1. Always attempt to start the service
     try {
-      await service.startService();
-    } catch (e) {}
+      service.startService();
+    } catch (e) {
+      // Handle error if service fails to start
+    }
 
-    // 2. Send command to service to start tracking (re-initializing if needed)
+    // 2. Send command to service to start tracking
     service.invoke(COMMAND_START_TRACKING);
-
   }
 
   void _pauseTracking() {
@@ -134,22 +166,11 @@ class _WalkProgressScreenState extends State<WalkProgressScreen> {
     }
   }
 
-  void _stopTracking({bool isGoalCompleted = false}) async {
+  void _stopTracking({bool isGoalCompleted = false}) {
     // Command the service to stop and save data
     service.invoke(COMMAND_STOP);
 
-    // Wait briefly for service to stop and save data
-    await Future.delayed(const Duration(milliseconds: 500));
 
-    // Retrieve the final data from SharedPreferences
-    final finalData = await getFinalTrackingData();
-
-    // Navigate to summary using saved data
-    Navigator.of(context).pushNamedAndRemoveUntil(
-        AppRoutes.walkSummery,
-            (route) => false,
-        arguments: finalData
-    );
   }
 
 
@@ -158,6 +179,7 @@ class _WalkProgressScreenState extends State<WalkProgressScreen> {
   @override
   void dispose() {
     _serviceStreamSubscription?.cancel();
+    _stopEventSubscription?.cancel(); // Cancel the new stop listener
     super.dispose();
   }
 
@@ -166,12 +188,11 @@ class _WalkProgressScreenState extends State<WalkProgressScreen> {
   Widget build(BuildContext context) {
     if (_trackingGoal == null) {
       return const Scaffold(
-        backgroundColor: Color(0xFF0F1418),
+        backgroundColor: _darkBackground,
         body: Center(child: CircularProgressIndicator(color: Colors.white)),
       );
     }
 
-    const Color darkBackground = Color(0xFF0F1418);
 
     String title = "Walking!";
     String walkTypeLabel = "Open Walk";
@@ -187,7 +208,8 @@ class _WalkProgressScreenState extends State<WalkProgressScreen> {
       final double km = _trackingGoal!.targetValue / 1000;
       title = "${km.toStringAsFixed(1)} km Walk";
       walkTypeLabel = "Distance Goal: ${km.toStringAsFixed(1)} km";
-      goalProgressValue = (_trackingGoal!.targetValue > 0) ? (_currentDistanceKm * 1000) / _trackingGoal!.targetValue : 0.0; // ✅ Progress গণনা
+      // Progress calculation: (Current distance in meters) / (Target distance in meters)
+      goalProgressValue = (_trackingGoal!.targetValue > 0) ? (_currentDistanceKm * 1000) / _trackingGoal!.targetValue : 0.0;
     } else if (_trackingGoal!.type == GoalType.instant) {
       title = "Instant Walk";
       walkTypeLabel = "Instant Walk";
@@ -203,9 +225,9 @@ class _WalkProgressScreenState extends State<WalkProgressScreen> {
 
 
     return Scaffold(
-      backgroundColor: darkBackground,
+      backgroundColor: _darkBackground,
       appBar: AppBar(
-        backgroundColor: darkBackground,
+        backgroundColor: _darkBackground,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
@@ -253,11 +275,18 @@ class _WalkProgressScreenState extends State<WalkProgressScreen> {
             // Control Buttons
             WalkControlButtons(
               currentState: _currentState,
+              // Correctly pass the Start or Resume handler based on current state
               onStart: (_currentState == TrackingState.paused) ? _resumeTracking : _startTracking,
               onPause: _pauseTracking,
               onStop: _stopTracking,
             ),
             const SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: () {
+                FirebaseCrashlytics.instance.crash();
+              },
+              child: const Text('Test Crash'),
+            )
           ],
         ),
       ),
