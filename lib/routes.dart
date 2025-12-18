@@ -1,8 +1,9 @@
+import 'package:fit_trac/presentation/screens/free_hand/free_hand_excercise_screen.dart';
+import 'package:fit_trac/presentation/screens/free_hand/push_ups.dart';
 import 'package:fit_trac/presentation/screens/home/home_screens.dart';
 import 'package:fit_trac/presentation/screens/run_directory/run_page.dart';
 import 'package:fit_trac/presentation/screens/running/runnign_summary/running_summary.dart';
 import 'package:fit_trac/presentation/screens/running/running_progress/run_progress.dart';
-import 'package:fit_trac/presentation/screens/running/running_progress/widgets/run_progress_bar.dart';
 import 'package:fit_trac/presentation/screens/settings/setting_page.dart';
 import 'package:fit_trac/presentation/screens/walk_summery/walk_summery.dart';
 import 'package:fit_trac/presentation/screens/walk_time_selec/walk_page.dart';
@@ -22,6 +23,8 @@ class AppRoutes {
   static const String walkSummery = '/walk_time_selec-summery';
   static const String runProgress = '/walk_tracking-progress';
   static const String runningSummary = '/running-summary';
+  static const String freeHand = '/free-hand';
+  static const String pushUp = '/push-up';
 
 
 
@@ -36,5 +39,7 @@ class AppRoutes {
     walkSummery: (context) => const WalkSummaryScreen(),
     runProgress: (context) => const RunProgress(),
     runningSummary: (context) => const RunningSummary(),
+    freeHand: (context) => const FreeHandExcerciseScreen(),
+    pushUp: (context) => const PushUps()
   };
 }

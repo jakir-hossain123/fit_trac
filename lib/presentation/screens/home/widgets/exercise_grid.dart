@@ -32,7 +32,13 @@ class ExerciseGrid extends StatelessWidget {
             // Row 1 (Freehand, Walk)
             Row(
               children: [
-                Expanded(child: _buildExerciseButton(exercises[0]["label"]!, exercises[0]["icon"]!)),
+                Expanded(
+            child: GestureDetector(
+              onTap: () => Navigator.of(context).pushNamed(AppRoutes.freeHand),
+              child: _buildExerciseButton(exercises[0]["label"]!, exercises[0]["icon"]!),
+            ),
+                ),
+
                 const SizedBox(width: 15),
                 Expanded(
                   child: GestureDetector(
