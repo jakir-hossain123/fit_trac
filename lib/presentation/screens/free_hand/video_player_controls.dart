@@ -78,8 +78,24 @@ class VideoControlOverlay extends StatelessWidget {
                           style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
                     ],
                   ),
-                  const SizedBox(height: 10),
-                  VideoProgressIndicator(controller, allowScrubbing: true),
+                  const SizedBox(height: 8),
+
+                  // Rounded Progress Bar
+                  SizedBox(
+                    height: 8,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: VideoProgressIndicator(
+                       controller,
+                        allowScrubbing: true,
+                        colors: const VideoProgressColors(
+                          playedColor: Colors.red,
+                          bufferedColor: Colors.white24,
+                          backgroundColor: Colors.white12,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

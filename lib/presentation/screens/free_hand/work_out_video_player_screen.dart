@@ -1,4 +1,3 @@
-import 'package:fit_trac/presentation/screens/free_hand/freehand_preparation.dart';
 import 'package:fit_trac/presentation/screens/free_hand/summery/work_out_summery.dart';
 import 'package:fit_trac/presentation/screens/free_hand/video_player_controls.dart';
 import 'package:fit_trac/presentation/screens/free_hand/workout_stats.dart';
@@ -100,7 +99,10 @@ class _WorkoutVideoPlayerScreenState extends State<WorkoutVideoPlayerScreen> {
                 }),
                 // Next Button
                 _buildBottomButton("Next", const Color(0xFF1E6363), Colors.white, () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const WorkOutSummery()));
+                  setState(() {
+                    _controller.pause();
+                  });
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => PushUpSummary()));
                 }),
                 // Repeat Button
                 _buildBottomButton("Repeat", const Color(0xFF1A2429), Colors.white, () {
