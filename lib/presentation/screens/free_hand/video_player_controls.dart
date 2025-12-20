@@ -89,6 +89,7 @@ class VideoControlOverlay extends StatelessWidget {
     );
   }
 
+
   Widget _circleIcon(IconData icon, VoidCallback onTap) => GestureDetector(
     onTap: onTap,
     child: CircleAvatar(radius: 18, backgroundColor: Colors.white24, child: Icon(icon, color: Colors.white, size: 20)),

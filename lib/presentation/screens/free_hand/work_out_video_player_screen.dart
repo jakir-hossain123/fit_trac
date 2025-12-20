@@ -1,9 +1,11 @@
+import 'package:fit_trac/presentation/screens/free_hand/freehand_preparation.dart';
+import 'package:fit_trac/presentation/screens/free_hand/summery/work_out_summery.dart';
 import 'package:fit_trac/presentation/screens/free_hand/video_player_controls.dart';
 import 'package:fit_trac/presentation/screens/free_hand/workout_stats.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:async';
-import 'fullscreen_video.dart'; // Import your separate files
+import 'fullscreen_video.dart';
 
 class WorkoutVideoPlayerScreen extends StatefulWidget {
   const WorkoutVideoPlayerScreen({super.key});
@@ -67,7 +69,73 @@ class _WorkoutVideoPlayerScreenState extends State<WorkoutVideoPlayerScreen> {
           const SizedBox(height: 30),
           const WorkoutStats(),
           const Spacer(),
+
+          // Up Next Text Section
+          const Text(
+            "Up Next",
+            style: TextStyle(
+              color: Colors.white54,
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          const SizedBox(height: 5),
+          const Text(
+            "Squats",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 30),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 25),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // End Button
+                _buildBottomButton("End", const Color(0xFF1A2429), Colors.white, () {
+                }),
+                // Next Button
+                _buildBottomButton("Next", const Color(0xFF1E6363), Colors.white, () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const WorkOutSummery()));
+                }),
+                // Repeat Button
+                _buildBottomButton("Repeat", const Color(0xFF1A2429), Colors.white, () {
+                  _controller.seekTo(Duration.zero);
+                  _controller.play();
+                }),
+              ],
+            ),
+          )
         ],
+      ),
+    );
+  }
+
+  Widget _buildBottomButton(String text, Color bgColor, Color textColor, VoidCallback onTap) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5),
+        child: ElevatedButton(
+          onPressed: onTap,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: bgColor,
+            foregroundColor: textColor,
+            padding: const EdgeInsets.symmetric(vertical: 10, ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(25),
+              side: const BorderSide(color: Colors.teal),
+            ),
+            elevation: 0,
+          ),
+          child: Text(
+            text,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+        ),
       ),
     );
   }
