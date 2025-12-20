@@ -27,7 +27,7 @@ class _FreeHandExcerciseScreenState extends State<FreeHandExcerciseScreen> {
         _searchFocusNode.unfocus();
       },
       child: Scaffold( //color - //161B1F //343D45
-        backgroundColor: Color(0xFF161B1F),
+
           appBar: AppBar(
             backgroundColor:Color(0xFF20262B),
             leading: Padding(
@@ -37,7 +37,7 @@ class _FreeHandExcerciseScreenState extends State<FreeHandExcerciseScreen> {
               }, icon: Icon(Icons.arrow_back_ios_new_rounded)),
             ),
             actions: [IconButton(onPressed: (){
-              Navigator.pushNamed(context, AppRoutes.pushUp);
+              Navigator.pushNamed(context, AppRoutes.freeHandPreparation);
             }, icon: Icon(Icons.navigate_next,size: 39,))],
             title: Text("Freehand  Exercises",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),
             centerTitle: true,

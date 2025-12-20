@@ -109,7 +109,6 @@ Future<void> _startLocationTracking(ServiceInstance service) async {
     );
 
   } catch (e) {
-    print("Failed to start location tracking or get initial position: $e");
   }
 }
 
@@ -127,7 +126,6 @@ void _startStepTracking(ServiceInstance service) {
       }
     },
     onError: (e) {
-      print('Pedometer Error: $e');
       _isPedometerAvailable = false;
       _totalSteps = 0;
       _sendTrackingData(service);
@@ -180,7 +178,6 @@ Future<void> _startNewTracking(ServiceInstance service) async {
   }
   if (_isTrackingRunning) return;
 
-  print("Starting new tracking session...");
 
   // Reset variables
   _totalDistance = 0.0;
@@ -192,10 +189,10 @@ Future<void> _startNewTracking(ServiceInstance service) async {
   _isTrackingPaused = false;
 
   // Start streams
-  _startLocationTracking(service); // await সরানো হয়েছে লোডিং স্পিড বাড়ানোর জন্য
+  _startLocationTracking(service);
   _startStepTracking(service);
   _startTimer(service);
-  _sendTrackingData(service); // Initial data update to the UI
+  _sendTrackingData(service);
 }
 
 void _pauseTracking(ServiceInstance service) {
@@ -220,13 +217,13 @@ void _stopAllTracking(ServiceInstance service) {
   _stepCountSubscription?.cancel();
   AwesomeNotifications().cancel(NOTIFICATION_ID);
 
-  // 1. SharedPreferences-এ চূড়ান্ত ডেটা সেভ করুন
+  // 1. SharedPreferences
   _saveFinalTrackingData();
 
-  // 2. ✅ পরিবর্তন: নেভিগেট করার জন্য UI-কে নিশ্চিতকরণ ইভেন্ট পাঠান
+
   service.invoke('tracking_stopped_and_saved', {'readyToNavigate': true});
 
-  // 3. সার্ভিস বন্ধ করুন
+
   service.stopSelf();
 }
 
@@ -242,12 +239,9 @@ void _sendTrackingData(ServiceInstance service) {
     'isPedometerAvailable': _isPedometerAvailable,
   };
 
-  // 1. UI-তে ডেটা প্রতি সেকেন্ডে পাঠান (এটি দ্রুত কাজ করে)
   service.invoke('update', data);
 
-  // 2. নোটিফিকেশন আপডেট শুধুমাত্র প্রতি 3 সেকেন্ডে করুন:
-  // - যখন _timeElapsedSeconds 0 (প্রথমবার স্টার্ট), অথবা
-  // - যখন _timeElapsedSeconds 3-এর গুণিতক হবে।
+
   if (_timeElapsedSeconds == 0 || _timeElapsedSeconds % 3 == 0) {
     String dist = _totalDistance.toStringAsFixed(2);
     int mins = _timeElapsedSeconds ~/ 60;
@@ -266,6 +260,14 @@ void _sendTrackingData(ServiceInstance service) {
         locked: true,
         payload: {'data': 'tracking_session'},
       ),
+      actionButtons: [
+        NotificationActionButton(
+          key: 'STOP_TRACKING',
+          label: 'Stop Service',
+          color: Colors.red,
+          actionType: ActionType.KeepOnTop,
+        ),
+      ],
     );
   }
 }

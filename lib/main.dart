@@ -4,11 +4,19 @@ import 'package:fit_trac/presentation/providers/run_provider.dart';
 import 'package:fit_trac/presentation/providers/walk_provider.dart';
 import 'package:fit_trac/services/tracking_service.dart' as trk;
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:provider/provider.dart';
 import 'package:fit_trac/utils/app_theme.dart';
 import 'package:fit_trac/routes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+
+@pragma("vm:entry-point")
+Future<void> onActionReceivedMethod(ReceivedAction receivedAction) async {
+  if (receivedAction.buttonKeyInput == 'STOP_TRACKING') {
+    FlutterBackgroundService().invoke("STOP_SERVICE");
+  }
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,6 +40,7 @@ void main() async {
   };
 
   // 4. Awesome Notifications
+
   await AwesomeNotifications().initialize(
     null,
     [
@@ -47,10 +56,17 @@ void main() async {
         groupKey: trk.NOTIFICATION_GROUP_KEY,
         locked: true,
         defaultRingtoneType: DefaultRingtoneType.Notification,
-      )
+      ),
     ],
     debug: true,
   );
+  AwesomeNotifications().setListeners(
+    onActionReceivedMethod: onActionReceivedMethod,
+
+  );
+
+
+
 
   // 5. background service
   await trk.initializeService();
