@@ -40,6 +40,6 @@ class AppRoutes {
     runProgress: (context) => const RunProgress(),
     runningSummary: (context) => const RunningSummary(),
     freeHand: (context) => const FreeHandExcerciseScreen(),
-    freeHandPreparation: (context) => const  PushUpDetailsScreen()
+    //freeHandPreparation: (context) => const  PushUpDetailsScreen()
   };
 }

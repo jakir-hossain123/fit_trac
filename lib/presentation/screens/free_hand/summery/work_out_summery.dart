@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../routes.dart';
 import '../../running/runnign_summary/running_summery_grid.dart';
 
 class PushUpSummary extends StatelessWidget {
@@ -66,7 +67,9 @@ class PushUpSummary extends StatelessWidget {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: Color(0xFF1E3A3A)),
                       padding: const EdgeInsets.symmetric(vertical: 15),
@@ -78,7 +81,9 @@ class PushUpSummary extends StatelessWidget {
                 const SizedBox(width: 15),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(context, AppRoutes.freeHand);
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF135D5A),
                       padding: const EdgeInsets.symmetric(vertical: 15),

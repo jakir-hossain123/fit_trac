@@ -16,10 +16,12 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
 
+
     <application
         android:label="fit_trac"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true">
 
 
         <receiver android:name="me.carda.awesome_notifications.receivers.DismissalReturnReceiver" android:exported="true" />

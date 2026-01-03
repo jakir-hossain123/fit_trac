@@ -67,15 +67,9 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
           children: [
             // 1. Video Background
             Center(
-              child: SizedBox.expand(
-                child: FittedBox(
-                  fit: BoxFit.cover,
-                  child: SizedBox(
-                    width: widget.controller.value.size.width,
-                    height: widget.controller.value.size.height,
-                    child: VideoPlayer(widget.controller),
-                  ),
-                ),
+              child: AspectRatio(
+                aspectRatio: widget.controller.value.aspectRatio,
+                child: VideoPlayer(widget.controller),
               ),
             ),
 
