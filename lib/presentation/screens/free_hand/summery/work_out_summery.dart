@@ -82,7 +82,7 @@ class PushUpSummary extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, AppRoutes.freeHand);
+                      Navigator.pushNamed(context, AppRoutes.home);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF135D5A),

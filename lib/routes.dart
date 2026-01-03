@@ -1,5 +1,6 @@
 import 'package:fit_trac/presentation/screens/free_hand/free_hand_excercise_screen.dart';
 import 'package:fit_trac/presentation/screens/free_hand/freehand_preparation.dart';
+import 'package:fit_trac/presentation/screens/free_hand/summery/work_out_summery.dart';
 import 'package:fit_trac/presentation/screens/home/home_screens.dart';
 import 'package:fit_trac/presentation/screens/run_directory/run_page.dart';
 import 'package:fit_trac/presentation/screens/running/runnign_summary/running_summary.dart';
@@ -25,6 +26,7 @@ class AppRoutes {
   static const String runningSummary = '/running-summary';
   static const String freeHand = '/free-hand';
   static const String freeHandPreparation = '/freehand-preparation';
+  static const String pushUpSummery = '/pushup-summery';
 
 
 
@@ -40,6 +42,7 @@ class AppRoutes {
     runProgress: (context) => const RunProgress(),
     runningSummary: (context) => const RunningSummary(),
     freeHand: (context) => const FreeHandExcerciseScreen(),
-    //freeHandPreparation: (context) => const  PushUpDetailsScreen()
+    // freeHandPreparation: (context) => const  PushUpDetailsScreen(),
+   // pushUpSummery: (context) => const PushUpSummary(exercise: null,),
   };
 }

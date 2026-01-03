@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../../models/exercise_model.dart';
 import '../../../services/excercise_services.dart';
+import 'freehand_preparation.dart';
 
 class FreeHandExcerciseScreen extends StatefulWidget {
   const FreeHandExcerciseScreen({super.key});
@@ -49,7 +50,7 @@ class _FreeHandExcerciseScreenState extends State<FreeHandExcerciseScreen> {
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(
-            builder: (_) => WorkoutVideoPlayerScreen(exercise: item)
+            builder: (_) => PushUpDetailsScreen(exercise: item)
         ));
       },
       child: Container(

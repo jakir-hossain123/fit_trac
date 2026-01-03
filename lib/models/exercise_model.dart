@@ -9,6 +9,8 @@ class ExerciseItem {
   final String description;
   final String duration;
   final String target;
+  final int sets;
+  final int reps;
 
   ExerciseItem({
     required this.id,
@@ -18,6 +20,9 @@ class ExerciseItem {
     required this.description,
     required this.duration,
     required this.target,
+    required this.sets,
+    required this.reps,
+
   });
 
   factory ExerciseItem.fromJson(Map<String, dynamic> json) {
@@ -30,6 +35,8 @@ class ExerciseItem {
       description: json['description'] ?? "",
       duration: "${json['duration'] ?? 0} min",
       target: json['targetDescription'] ?? "",
+      sets: json['sets'] ?? 0,
+      reps: json['reps'] ?? 0,
     );
   }
 }

@@ -78,7 +78,7 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
               opacity: _showControls ? 1.0 : 0.0,
               duration: const Duration(milliseconds: 300),
               child: Container(
-                color: Colors.black38, // Dim the background when controls are visible
+                color: Colors.black38,
                 child: Stack(
                   children: [
                     // Top Controls
