@@ -1,6 +1,5 @@
 
 
-import 'package:fit_trac/presentation/screens/free_hand/work_out_video_player_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../../../models/exercise_model.dart';
@@ -32,7 +31,9 @@ class _FreeHandExcerciseScreenState extends State<FreeHandExcerciseScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF161B1F),
-      appBar: AppBar(title: const Text("Exercises"), centerTitle: true),
+      appBar: AppBar(
+        backgroundColor:Color(0xFF20262B),
+          title: const Text("Exercises"), centerTitle: true),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
@@ -69,7 +70,8 @@ class _FreeHandExcerciseScreenState extends State<FreeHandExcerciseScreen> {
               Text(item.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
               Text(item.target, style: const TextStyle(color: Colors.white54, fontSize: 12)),
             ])),
-            const Icon(Icons.play_circle_fill, color: Colors.teal, size: 30),
+            Icon(Icons.play_circle_outline_rounded, color: Colors.teal.shade400, size: 30),
+
           ],
         ),
       ),
