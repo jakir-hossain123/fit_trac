@@ -52,16 +52,11 @@ class _RunProgressState extends State<RunProgress> {
     _stopEventSubscription = service.on('tracking_stopped_and_saved').listen((data) async {
       if (data != null && data['readyToNavigate'] == true) {
 
-        // 🛑 পরিবর্তন: SharedPreferences থেকে ডেটা লোড করার প্রয়োজন নেই।
-        // সামারি পেজ নিজেই getFinalTrackingData() ব্যবহার করে লোড করবে।
-        // final finalData = await getFinalTrackingData(); // REMOVED
 
-        // Navigate to summary page (Push Replacement ensures the user cannot return to the running screen easily)
         if (mounted) {
           Navigator.of(context).pushReplacementNamed(
             AppRoutes.runningSummary,
-            // 🛑 পরিবর্তন: arguments বাদ দেওয়া হলো।
-            // arguments: { ... } // REMOVED
+
           );
         }
       }

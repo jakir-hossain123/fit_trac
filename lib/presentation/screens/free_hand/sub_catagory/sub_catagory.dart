@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../../models/sub_catagory_model.dart';
+import '../../../../models/exercise_model.dart'; // ExerciseItem এর জন্য
 import '../../../../routes.dart';
 import '../../../../services/sub_catagory_survice.dart';
+import '../../../providers/exercise_provider.dart';
+import '../freehand_preparation.dart';
+import '../work_out_video_player_screen.dart';
 
 class SubCatagory extends StatefulWidget {
   const SubCatagory({super.key});
@@ -44,6 +49,7 @@ class _SubCatagoryState extends State<SubCatagory> {
       child: Scaffold(
         backgroundColor: const Color(0xFF161B1F),
         appBar: AppBar(
+          scrolledUnderElevation: 0,
           backgroundColor: const Color(0xFF20262B),
           leading: IconButton(
             onPressed: () => Navigator.pop(context),
@@ -66,15 +72,10 @@ class _SubCatagoryState extends State<SubCatagory> {
               children: [
                 _buildSearchBar(),
                 const SizedBox(height: 30),
-
-                // --- Workout of the Day (Fixed Section) ---
                 _buildSectionHeader("Workout of the day", "Complete workout plan for the whole body"),
                 const SizedBox(height: 20),
-                _buildWorkoutOfTheDay(subCategories[0]), // প্রথম ডাটাটি এখানে পাঠাচ্ছি
-
+                _buildWorkoutOfTheDay(subCategories[0]),
                 const SizedBox(height: 32),
-
-                // --- Sub-Categories List ---
                 _buildSectionHeader("Exercises", "Choose your workout"),
                 const SizedBox(height: 15),
                 ListView.builder(
@@ -94,7 +95,7 @@ class _SubCatagoryState extends State<SubCatagory> {
     );
   }
 
-  // ১. Workout of the Day - ডিজাইন ফিক্সড, ইমেজ এপিআই থেকে
+  //  Workout of the Day - Provider logic added here
   Widget _buildWorkoutOfTheDay(SubCategoryModel item) {
     return Stack(
       alignment: Alignment.bottomLeft,
@@ -113,7 +114,6 @@ class _SubCatagoryState extends State<SubCatagory> {
             ),
           ),
         ),
-        // ইমেজের ওপর শ্যাডো ইফেক্ট
         Container(
           height: 350,
           decoration: BoxDecoration(
@@ -138,7 +138,7 @@ class _SubCatagoryState extends State<SubCatagory> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: () => Navigator.pushNamed(context, AppRoutes.freeHand),
+                  onPressed: () {},
                   icon: const Icon(Icons.play_arrow_rounded),
                   label: const Text("Start Workout"),
                   style: ElevatedButton.styleFrom(
@@ -155,41 +155,53 @@ class _SubCatagoryState extends State<SubCatagory> {
     );
   }
 
-  // ২. লিস্ট আইটেম ডিজাইন
   Widget _buildDynamicExerciseTile(SubCategoryModel item) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color(0xFF20262B),
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Image.network(
-              item.imageUrl,
-              height: 60, width: 60, fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => const Icon(Icons.fitness_center, color: Colors.white),
+    return GestureDetector(
+      onTap: () {
+        // লিস্ট আইটেমে ক্লিক করলে প্রোভাইডারে শুধু আইডি সেট হবে
+        context.read<ExerciseProvider>().setSubCategoryId(item.id);
+
+        Navigator.pushNamed(
+          context,
+          AppRoutes.freeHand,
+          arguments: item.id,
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: const Color(0xFF20262B),
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(
+                item.imageUrl,
+                height: 60, width: 60, fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => const Icon(Icons.fitness_center, color: Colors.white),
+              ),
             ),
-          ),
-          const SizedBox(width: 15),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(item.name, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                Text(item.description, style: const TextStyle(color: Colors.white54, fontSize: 12), maxLines: 1, overflow: TextOverflow.ellipsis),
-              ],
+            const SizedBox(width: 15),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(item.name, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(item.description, style: const TextStyle(color: Colors.white54, fontSize: 12), maxLines: 1, overflow: TextOverflow.ellipsis),
+                ],
+              ),
             ),
-          ),
-          Icon(Icons.play_circle_outline_rounded, color: Colors.teal.shade400, size: 30),
-        ],
+            Icon(Icons.play_circle_outline_rounded, color: Colors.teal.shade400, size: 30),
+          ],
+        ),
       ),
     );
   }
 
+  // --- SearchBar এবং SectionHeader মেথডগুলো একই থাকবে ---
   Widget _buildSearchBar() {
     return TextField(
       focusNode: _searchFocusNode,

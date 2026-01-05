@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:awesome_notifications/awesome_notifications.dart' hide NOTIFICATION_ID;
+import 'package:fit_trac/presentation/providers/exercise_provider.dart';
 import 'package:fit_trac/presentation/providers/run_provider.dart';
 import 'package:fit_trac/presentation/providers/walk_provider.dart';
 import 'package:fit_trac/services/tracking_service.dart' as trk;
@@ -76,6 +77,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => WalkProvider()),
         ChangeNotifierProvider(create: (_) => RunProvider()),
+        ChangeNotifierProvider(create: (_) => ExerciseProvider()),
       ],
       child: const MyApp(),
     ),
@@ -91,8 +93,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Fitness App',
       theme: AppTheme.darkTheme,
-      routes: AppRoutes.routes,
       initialRoute: AppRoutes.home,
+      onGenerateRoute: AppRoutes.onGenerateRoute,
     );
   }
 }

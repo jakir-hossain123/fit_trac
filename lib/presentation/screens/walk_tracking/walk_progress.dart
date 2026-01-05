@@ -69,12 +69,7 @@ class _WalkProgressScreenState extends State<WalkProgressScreen> {
     _stopEventSubscription = service.on('tracking_stopped_and_saved').listen((data) async {
       if (data != null && data['readyToNavigate'] == true) {
 
-        // 🛑 পরিবর্তন: এই লাইনটি আর প্রয়োজন নেই। WalkSummaryScreen নিজেই ডেটা লোড করবে।
-        // final finalData = await getFinalTrackingData(); // REMOVED
-
-        // Navigate to summary page
         if (mounted) {
-          // ✅ পরিবর্তন: আর্গুমেন্ট ছাড়া নেভিগেট করুন।
           Navigator.of(context).pushNamedAndRemoveUntil(
             AppRoutes.walkSummery,
                 (route) => false,

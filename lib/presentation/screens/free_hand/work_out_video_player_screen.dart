@@ -1,33 +1,46 @@
 import 'package:fit_trac/presentation/screens/free_hand/summery/work_out_summery.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart'; // প্রোভাইডার ইম্পোর্ট
 import 'package:video_player/video_player.dart';
 import 'dart:async';
 import '../../../models/exercise_model.dart';
-import '../../../routes.dart';
+import '../../providers/exercise_provider.dart';
 import 'fullscreen_video.dart';
 
 class WorkoutVideoPlayerScreen extends StatefulWidget {
-  final ExerciseItem exercise;
-  const WorkoutVideoPlayerScreen({super.key, required this.exercise});
+  // কনস্ট্রাক্টর থেকে exercise প্যারামিটার সরিয়ে দেওয়া হয়েছে
+  const WorkoutVideoPlayerScreen({super.key});
 
   @override
   State<WorkoutVideoPlayerScreen> createState() => _WorkoutVideoPlayerScreenState();
 }
 
 class _WorkoutVideoPlayerScreenState extends State<WorkoutVideoPlayerScreen> {
-  late VideoPlayerController _controller;
+  VideoPlayerController? _controller; // লেট (late) এর বদলে নাল-এবল করা হয়েছে সেফটির জন্য
   bool _showControls = true;
   Timer? _hideTimer;
+  ExerciseItem? exercise; // প্রোভাইডার থেকে আসা ডাটা এখানে থাকবে
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.exercise.videoUrl))
+
+    exercise = Provider.of<ExerciseProvider>(context, listen: false).selectedExercise;
+
+    if (exercise != null) {
+      _initializeVideo();
+    }
+  }
+
+  void _initializeVideo() {
+    _controller = VideoPlayerController.networkUrl(Uri.parse(exercise!.videoUrl))
       ..initialize().then((_) {
-        setState(() {});
-        _controller.play();
+        if (mounted) {
+          setState(() {});
+          _controller?.play();
+        }
       });
-    _controller.addListener(_videoListener);
+    _controller?.addListener(_videoListener);
     _startHideTimer();
   }
 
@@ -50,18 +63,21 @@ class _WorkoutVideoPlayerScreenState extends State<WorkoutVideoPlayerScreen> {
   @override
   void dispose() {
     _hideTimer?.cancel();
-    _controller.removeListener(_videoListener);
-    _controller.dispose();
+    _controller?.removeListener(_videoListener);
+    _controller?.dispose();
     super.dispose();
-  }
-
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, "0");
-    return "${twoDigits(duration.inMinutes.remainder(60))}:${twoDigits(duration.inSeconds.remainder(60))}";
   }
 
   @override
   Widget build(BuildContext context) {
+    // যদি কোনো কারণে ডাটা না পাওয়া যায়
+    if (exercise == null) {
+      return const Scaffold(
+        backgroundColor: Color(0xFF161B1F),
+        body: Center(child: Text("No Exercise Data Found", style: TextStyle(color: Colors.white))),
+      );
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFF161B1F),
       appBar: AppBar(
@@ -71,7 +87,7 @@ class _WorkoutVideoPlayerScreenState extends State<WorkoutVideoPlayerScreen> {
           icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(widget.exercise.title, style: const TextStyle(color: Colors.white)),
+        title: Text(exercise!.title, style: const TextStyle(color: Colors.white)),
       ),
       body: Column(
         children: [
@@ -79,8 +95,8 @@ class _WorkoutVideoPlayerScreenState extends State<WorkoutVideoPlayerScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Container(
               decoration: BoxDecoration(
-                color:  Colors.black38,
-                borderRadius: BorderRadius.circular(18)
+                  color: Colors.black38,
+                  borderRadius: BorderRadius.circular(18)
               ),
               height: 400,
               width: double.infinity,
@@ -91,18 +107,21 @@ class _WorkoutVideoPlayerScreenState extends State<WorkoutVideoPlayerScreen> {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      SizedBox.expand(
-                        child: FittedBox(
-                          child: SizedBox(
-                            width: _controller.value.size.width,
-                            height: _controller.value.size.height,
-                            child: VideoPlayer(_controller),
+                      if (_controller != null && _controller!.value.isInitialized)
+                        SizedBox.expand(
+                          child: FittedBox(
+                            fit: BoxFit.cover,
+                            child: SizedBox(
+                              width: _controller!.value.size.width,
+                              height: _controller!.value.size.height,
+                              child: VideoPlayer(_controller!),
+                            ),
                           ),
-                        ),
-                      ),
+                        )
+                      else
+                        const Center(child: CircularProgressIndicator(color: Colors.teal)),
 
-
-                      if (_controller.value.isInitialized)
+                      if (_controller != null && _controller!.value.isInitialized)
                         Positioned.fill(
                           child: AnimatedOpacity(
                             opacity: _showControls ? 1.0 : 0.0,
@@ -111,7 +130,6 @@ class _WorkoutVideoPlayerScreenState extends State<WorkoutVideoPlayerScreen> {
                               color: Colors.black45,
                               child: Stack(
                                 children: [
-
                                   Positioned(
                                     top: 10,
                                     right: 10,
@@ -120,15 +138,15 @@ class _WorkoutVideoPlayerScreenState extends State<WorkoutVideoPlayerScreen> {
                                         _buildCircleIcon(Icons.fullscreen, () {
                                           Navigator.push(context, MaterialPageRoute(
                                             builder: (context) => FullScreenVideoPlayer(
-                                              controller: _controller,
-                                              title: widget.exercise.title,
+                                              controller: _controller!,
+                                              title: exercise!.title,
                                             ),
                                           ));
                                         }),
                                         const SizedBox(width: 8),
                                         _buildCircleIcon(
-                                          _controller.value.volume == 0 ? Icons.volume_off : Icons.volume_up,
-                                              () => setState(() => _controller.setVolume(_controller.value.volume == 0 ? 1 : 0)),
+                                          _controller!.value.volume == 0 ? Icons.volume_off : Icons.volume_up,
+                                              () => setState(() => _controller!.setVolume(_controller!.value.volume == 0 ? 1 : 0)),
                                         ),
                                       ],
                                     ),
@@ -138,22 +156,21 @@ class _WorkoutVideoPlayerScreenState extends State<WorkoutVideoPlayerScreen> {
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        _buildSkipIcon(Icons.replay_10, () => _controller.seekTo(_controller.value.position - const Duration(seconds: 10))),
+                                        _buildSkipIcon(Icons.replay_10, () => _controller!.seekTo(_controller!.value.position - const Duration(seconds: 10))),
                                         const SizedBox(width: 15),
                                         GestureDetector(
-                                          onTap: () => setState(() => _controller.value.isPlaying ? _controller.pause() : _controller.play()),
+                                          onTap: () => setState(() => _controller!.value.isPlaying ? _controller!.pause() : _controller!.play()),
                                           child: CircleAvatar(
                                             radius: 25,
                                             backgroundColor: Colors.white24,
-                                            child: Icon(_controller.value.isPlaying ? Icons.pause : Icons.play_arrow, color: Colors.white, size: 30),
+                                            child: Icon(_controller!.value.isPlaying ? Icons.pause : Icons.play_arrow, color: Colors.white, size: 30),
                                           ),
                                         ),
                                         const SizedBox(width: 15),
-                                        _buildSkipIcon(Icons.forward_10, () => _controller.seekTo(_controller.value.position + const Duration(seconds: 10))),
+                                        _buildSkipIcon(Icons.forward_10, () => _controller!.seekTo(_controller!.value.position + const Duration(seconds: 10))),
                                       ],
                                     ),
                                   ),
-                                  //button
                                   Positioned(
                                     bottom: 10,
                                     left: 15,
@@ -162,10 +179,10 @@ class _WorkoutVideoPlayerScreenState extends State<WorkoutVideoPlayerScreen> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Text(widget.exercise.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                                        Text(exercise!.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
                                         const SizedBox(height: 5),
                                         VideoProgressIndicator(
-                                          _controller,
+                                          _controller!,
                                           allowScrubbing: true,
                                           colors: const VideoProgressColors(playedColor: Colors.white, bufferedColor: Colors.white24, backgroundColor: Colors.white12),
                                         ),
@@ -186,15 +203,14 @@ class _WorkoutVideoPlayerScreenState extends State<WorkoutVideoPlayerScreen> {
 
           const SizedBox(height: 30),
 
-          // Reps & Sets
-          _buildCounterTag('${widget.exercise.reps} rep', '${widget.exercise.sets} set'),
+          // Reps & Sets - প্রোভাইডার থেকে ডাটা নিয়ে দেখাচ্ছে
+          _buildCounterTag('${exercise!.reps} rep', '${exercise!.sets} set'),
 
           const Spacer(),
           const Text("Up Next", style: TextStyle(color: Colors.white54, fontSize: 12)),
           const Text("Squats", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 25),
 
-          //buttons
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
             child: Row(
@@ -202,13 +218,13 @@ class _WorkoutVideoPlayerScreenState extends State<WorkoutVideoPlayerScreen> {
               children: [
                 _buildOutlineButton("End", () => Navigator.pop(context)),
                 _buildElevatedButton("Next", () {
-                  _controller.pause();
+                  _controller?.pause();
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const PushUpSummary()),
                   );
                 }),
-                _buildOutlineButton("Repeat", () => _controller.seekTo(Duration.zero)),
+                _buildOutlineButton("Repeat", () => _controller?.seekTo(Duration.zero)),
               ],
             ),
           ),
@@ -217,7 +233,7 @@ class _WorkoutVideoPlayerScreenState extends State<WorkoutVideoPlayerScreen> {
     );
   }
 
-  // helper methods
+  // --- Helper Methods (আগের মতোই থাকবে) ---
   Widget _buildCircleIcon(IconData icon, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,

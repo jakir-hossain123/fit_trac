@@ -92,7 +92,7 @@ class PushUpDetailsScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => WorkoutVideoPlayerScreen(exercise: exercise)),
+                    MaterialPageRoute(builder: (_) => WorkoutVideoPlayerScreen()),
                   );
                 },
                 style: ElevatedButton.styleFrom(

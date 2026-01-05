@@ -1,51 +1,71 @@
-import 'package:fit_trac/presentation/screens/free_hand/free_hand_excercise_screen.dart';
-import 'package:fit_trac/presentation/screens/free_hand/freehand_preparation.dart';
-import 'package:fit_trac/presentation/screens/free_hand/sub_catagory/sub_catagory.dart';
-import 'package:fit_trac/presentation/screens/free_hand/summery/work_out_summery.dart';
+import 'package:flutter/material.dart';
 import 'package:fit_trac/presentation/screens/home/home_screens.dart';
 import 'package:fit_trac/presentation/screens/run_directory/run_page.dart';
-import 'package:fit_trac/presentation/screens/running/runnign_summary/running_summary.dart';
 import 'package:fit_trac/presentation/screens/running/running_progress/run_progress.dart';
-import 'package:fit_trac/presentation/screens/settings/setting_page.dart';
+import 'package:fit_trac/presentation/screens/running/runnign_summary/running_summary.dart';
 import 'package:fit_trac/presentation/screens/walk_summery/walk_summery.dart';
 import 'package:fit_trac/presentation/screens/walk_time_selec/walk_page.dart';
 import 'package:fit_trac/presentation/screens/walk_tracking/walk_progress.dart';
- import 'package:flutter/material.dart';
-import 'presentation/screens/sign_in/sign_in_page.dart';
-import 'presentation/screens/sign_up/sign_up_page.dart';
+import 'package:fit_trac/presentation/screens/free_hand/sub_catagory/sub_catagory.dart';
+import 'package:fit_trac/presentation/screens/free_hand/free_hand_excercise_screen.dart';
 
 class AppRoutes {
   static const String home = '/';
-  static const String signIn = '/sign-in';
-  static const String signUp = '/sign-up';
-  static const String walkPage = '/walk_time_selec-page';
-  static const String walkProgressPage = '/Walk-progress-page';
-  static const String settings = '/settings';
-  static const String runPage = '/walk_tracking-page';
-  static const String walkSummery = '/walk_time_selec-summery';
-  static const String runProgress = '/walk_tracking-progress';
-  static const String runningSummary = '/running-summary';
-  static const String freeHand = '/free-hand';
-  static const String freeHandPreparation = '/freehand-preparation';
-  static const String pushUpSummery = '/pushup-summery';
   static const String subCatagory = '/sub-catagory';
+  static const String freeHand = '/free-hand';
+  static const String walkPage = '/walk_time_selec-page';
+  static const String runPage = '/walk_tracking-page';
+  static const String walkProgressPage = '/Walk-progress-page';
+  static const String walkSummery = '/walk_time_selec-summery';
+  static const String runProgress = '/run-progress';
+  static const String runningSummary = '/running-summary';
 
+  static Route<dynamic> onGenerateRoute(RouteSettings settings) {
+    switch (settings.name) {
+      case home:
+        return MaterialPageRoute(builder: (_) => const HomePage());
 
+      case subCatagory:
+        return MaterialPageRoute(builder: (_) => const SubCatagory());
 
-  static final Map<String, WidgetBuilder> routes = {
-    home: (context) => const HomePage(),
-    signIn: (context) => const SignInPage(),
-    signUp: (context) => const SignUpPage(),
-    walkPage: (context) => const WalkScreen(),
-    walkProgressPage: (context) => const WalkProgressScreen(),
-    settings: (context) => const SettingPage(),
-    runPage: (context) => const RunScreen(),
-    walkSummery: (context) => const WalkSummaryScreen(),
-    runProgress: (context) => const RunProgress(),
-    runningSummary: (context) => const RunningSummary(),
-    freeHand: (context) => const FreeHandExcerciseScreen(),
-    // freeHandPreparation: (context) => const  PushUpDetailsScreen(),
-   // pushUpSummery: (context) => const PushUpSummary(exercise: null,),
-    subCatagory: (context)=> const SubCatagory(),
-  };
+      case freeHand:
+        final int id = settings.arguments as int;
+        return MaterialPageRoute(
+          builder: (_) => FreeHandExcerciseScreen(subCategoryId: id),
+        );
+
+      case walkPage:
+        return MaterialPageRoute(builder: (_) => const WalkScreen());
+
+      case runPage:
+        return MaterialPageRoute(builder: (_) => const RunScreen());
+
+      case runProgress:
+        return MaterialPageRoute(
+          builder: (_) => const RunProgress(),
+          settings: settings,
+        );
+
+      case runningSummary:
+        return MaterialPageRoute(
+          builder: (_) => const RunningSummary(),
+        );
+
+      case walkProgressPage:
+        return MaterialPageRoute(
+          builder: (_) => const WalkProgressScreen(),
+          settings: settings,
+        );
+
+      case walkSummery:
+        return MaterialPageRoute(builder: (_) => const WalkSummaryScreen());
+
+      default:
+        return MaterialPageRoute(
+          builder: (_) => Scaffold(
+            body: Center(child: Text('No route defined for ${settings.name}')),
+          ),
+        );
+    }
+  }
 }
