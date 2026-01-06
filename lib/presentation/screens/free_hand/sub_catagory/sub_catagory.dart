@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../models/sub_catagory_model.dart';
-import '../../../../models/exercise_model.dart'; // ExerciseItem এর জন্য
 import '../../../../routes.dart';
 import '../../../../services/sub_catagory_survice.dart';
 import '../../../providers/exercise_provider.dart';
-import '../freehand_preparation.dart';
-import '../work_out_video_player_screen.dart';
+
 
 class SubCatagory extends StatefulWidget {
   const SubCatagory({super.key});
@@ -158,13 +156,15 @@ class _SubCatagoryState extends State<SubCatagory> {
   Widget _buildDynamicExerciseTile(SubCategoryModel item) {
     return GestureDetector(
       onTap: () {
-        // লিস্ট আইটেমে ক্লিক করলে প্রোভাইডারে শুধু আইডি সেট হবে
         context.read<ExerciseProvider>().setSubCategoryId(item.id);
 
         Navigator.pushNamed(
           context,
           AppRoutes.freeHand,
-          arguments: item.id,
+          arguments: {
+            'id': item.id,
+            'name': item.name,
+          },
         );
       },
       child: Container(
@@ -201,7 +201,7 @@ class _SubCatagoryState extends State<SubCatagory> {
     );
   }
 
-  // --- SearchBar এবং SectionHeader মেথডগুলো একই থাকবে ---
+  //  SearchBar এবং SectionHeader
   Widget _buildSearchBar() {
     return TextField(
       focusNode: _searchFocusNode,

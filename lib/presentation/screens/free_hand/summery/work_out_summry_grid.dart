@@ -57,7 +57,7 @@ class SummaryStatCard extends StatelessWidget {
             style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
-          Row(
+            Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.flash_on, color: stat.color, size: 14),

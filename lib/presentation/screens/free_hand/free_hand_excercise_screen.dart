@@ -3,11 +3,12 @@ import 'package:provider/provider.dart'; // Provider ইম্পোর্ট
 import '../../../../models/exercise_model.dart';
 import '../../../../services/excercise_services.dart';
 import '../../providers/exercise_provider.dart';
-import 'freehand_preparation.dart'; // এখানে PushUpDetailsScreen আছে কিনা নিশ্চিত হোন
+import 'freehand_preparation.dart';
 
 class FreeHandExcerciseScreen extends StatefulWidget {
   final int subCategoryId;
-  const FreeHandExcerciseScreen({super.key, required this.subCategoryId});
+  final String? categoryName;
+  const FreeHandExcerciseScreen({super.key, required this.subCategoryId, this.categoryName});
 
   @override
   State<FreeHandExcerciseScreen> createState() => _FreeHandExcerciseScreenState();
@@ -43,6 +44,8 @@ class _FreeHandExcerciseScreenState extends State<FreeHandExcerciseScreen> {
   }
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final String appBarTitle = widget.categoryName ?? "Exercises";
     return Scaffold(
       backgroundColor: const Color(0xFF161B1F),
       appBar: AppBar(
@@ -52,8 +55,8 @@ class _FreeHandExcerciseScreenState extends State<FreeHandExcerciseScreen> {
           icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          "Exercises",
+        title:  Text(
+          appBarTitle,
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -78,10 +81,7 @@ class _FreeHandExcerciseScreenState extends State<FreeHandExcerciseScreen> {
   Widget _buildTile(ExerciseItem item) {
     return GestureDetector(
       onTap: () {
-        // ১. প্রোভাইডারে ডাটা সেট করা (listen: false অবশ্যই দিতে হবে)
         context.read<ExerciseProvider>().setSelectedExercise(item);
-
-        // ২. নেভিগেশন (এখন প্যারামিটার পাঠালেও সমস্যা নেই, না পাঠালেও প্রোভাইডার থেকে পাবে)
         Navigator.push(
           context,
           MaterialPageRoute(

@@ -28,10 +28,13 @@ class AppRoutes {
       case subCatagory:
         return MaterialPageRoute(builder: (_) => const SubCatagory());
 
-      case freeHand:
-        final int id = settings.arguments as int;
+      case AppRoutes.freeHand:
+        final args = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
-          builder: (_) => FreeHandExcerciseScreen(subCategoryId: id),
+          builder: (_) => FreeHandExcerciseScreen(
+            subCategoryId: args['id'],
+            categoryName: args['name'],
+          ),
         );
 
       case walkPage:
