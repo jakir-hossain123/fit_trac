@@ -1,6 +1,6 @@
 import 'package:fit_trac/presentation/screens/free_hand/summery/work_out_summery.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // প্রোভাইডার ইম্পোর্ট
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:async';
 import '../../../models/exercise_model.dart';
@@ -8,7 +8,7 @@ import '../../providers/exercise_provider.dart';
 import 'fullscreen_video.dart';
 
 class WorkoutVideoPlayerScreen extends StatefulWidget {
-  // কনস্ট্রাক্টর থেকে exercise প্যারামিটার সরিয়ে দেওয়া হয়েছে
+
   const WorkoutVideoPlayerScreen({super.key});
 
   @override
@@ -16,10 +16,10 @@ class WorkoutVideoPlayerScreen extends StatefulWidget {
 }
 
 class _WorkoutVideoPlayerScreenState extends State<WorkoutVideoPlayerScreen> {
-  VideoPlayerController? _controller; // লেট (late) এর বদলে নাল-এবল করা হয়েছে সেফটির জন্য
+  VideoPlayerController? _controller;
   bool _showControls = true;
   Timer? _hideTimer;
-  ExerciseItem? exercise; // প্রোভাইডার থেকে আসা ডাটা এখানে থাকবে
+  ExerciseItem? exercise;
 
   @override
   void initState() {
@@ -59,6 +59,10 @@ class _WorkoutVideoPlayerScreenState extends State<WorkoutVideoPlayerScreen> {
     setState(() => _showControls = !_showControls);
     if (_showControls) _startHideTimer();
   }
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    return "${twoDigits(duration.inMinutes.remainder(60))}:${twoDigits(duration.inSeconds.remainder(60))}";
+  }
 
   @override
   void dispose() {
@@ -70,7 +74,6 @@ class _WorkoutVideoPlayerScreenState extends State<WorkoutVideoPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // যদি কোনো কারণে ডাটা না পাওয়া যায়
     if (exercise == null) {
       return const Scaffold(
         backgroundColor: Color(0xFF161B1F),
@@ -185,6 +188,20 @@ class _WorkoutVideoPlayerScreenState extends State<WorkoutVideoPlayerScreen> {
                                           _controller!,
                                           allowScrubbing: true,
                                           colors: const VideoProgressColors(playedColor: Colors.white, bufferedColor: Colors.white24, backgroundColor: Colors.white12),
+
+                                        ),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              _formatDuration(_controller!.value.position),
+                                              style: const TextStyle(color: Colors.white, fontSize: 12),
+                                            ),
+                                            Text(
+                                              _formatDuration(_controller!.value.duration),
+                                              style: const TextStyle(color: Colors.white, fontSize: 12),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
@@ -203,7 +220,6 @@ class _WorkoutVideoPlayerScreenState extends State<WorkoutVideoPlayerScreen> {
 
           const SizedBox(height: 30),
 
-          // Reps & Sets - প্রোভাইডার থেকে ডাটা নিয়ে দেখাচ্ছে
           _buildCounterTag('${exercise!.reps} rep', '${exercise!.sets} set'),
 
           const Spacer(),
@@ -233,7 +249,6 @@ class _WorkoutVideoPlayerScreenState extends State<WorkoutVideoPlayerScreen> {
     );
   }
 
-  // --- Helper Methods (আগের মতোই থাকবে) ---
   Widget _buildCircleIcon(IconData icon, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,

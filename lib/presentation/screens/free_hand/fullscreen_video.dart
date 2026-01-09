@@ -16,6 +16,7 @@ class FullScreenVideoPlayer extends StatefulWidget {
   State<FullScreenVideoPlayer> createState() => _FullScreenVideoPlayerState();
 }
 
+
 class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
   bool _showControls = true;
   Timer? _hideTimer;
@@ -28,7 +29,11 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
   }
 
   void _videoListener() {
-    if (mounted) setState(() {});
+    if (mounted) {
+      if (widget.controller.value.isInitialized) {
+        setState(() {});
+      }
+    }
   }
 
   // Timer logic to hide controls after 3 seconds
@@ -106,13 +111,13 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
                         children: [
                           _buildSkipIcon(Icons.replay_10, () {
                             widget.controller.seekTo(widget.controller.value.position - const Duration(seconds: 10));
-                            _startHideTimer(); // Reset timer on action
+                            _startHideTimer();
                           }),
                           const SizedBox(width: 30),
                           GestureDetector(
                             onTap: () {
                               setState(() => widget.controller.value.isPlaying ? widget.controller.pause() : widget.controller.play());
-                              _startHideTimer(); // Reset timer on action
+                              _startHideTimer();
                             },
                             child: CircleAvatar(
                               radius: 40,
@@ -132,6 +137,7 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
                         ],
                       ),
                     ),
+
 
                     // Bottom Progress Info
                     Positioned(
