@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:awesome_notifications/awesome_notifications.dart' hide NOTIFICATION_ID;
 import 'package:fit_trac/presentation/providers/exercise_provider.dart';
 import 'package:fit_trac/presentation/providers/run_provider.dart';
+import 'package:fit_trac/presentation/providers/video_player_provider.dart';
 import 'package:fit_trac/presentation/providers/walk_provider.dart';
 import 'package:fit_trac/services/tracking_service.dart' as trk;
 import 'package:flutter/material.dart';
@@ -78,6 +79,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => WalkProvider()),
         ChangeNotifierProvider(create: (_) => RunProvider()),
         ChangeNotifierProvider(create: (_) => ExerciseProvider()),
+        ChangeNotifierProvider(create: (_) => VideoPlayerProvider()),
       ],
       child: const MyApp(),
     ),
