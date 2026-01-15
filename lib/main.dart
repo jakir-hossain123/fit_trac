@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:awesome_notifications/awesome_notifications.dart' hide NOTIFICATION_ID;
+import 'package:fit_trac/presentation/providers/auth_provider.dart';
 import 'package:fit_trac/presentation/providers/exercise_provider.dart';
 import 'package:fit_trac/presentation/providers/run_provider.dart';
 import 'package:fit_trac/presentation/providers/video_player_provider.dart';
@@ -76,6 +77,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => WalkProvider()),
         ChangeNotifierProvider(create: (_) => RunProvider()),
         ChangeNotifierProvider(create: (_) => ExerciseProvider()),
@@ -95,7 +97,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Fitness App',
       theme: AppTheme.darkTheme,
-      initialRoute: AppRoutes.home,
+      initialRoute: AppRoutes.signIn,
       onGenerateRoute: AppRoutes.onGenerateRoute,
     );
   }

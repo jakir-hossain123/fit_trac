@@ -75,6 +75,14 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: AppTheme.primaryDarkColor,
 
+      floatingActionButton: FloatingActionButton(
+        mini: true,
+        backgroundColor: Colors.redAccent,
+          child: const Icon(Icons.logout),
+          onPressed: (){
+              Navigator.pushNamedAndRemoveUntil(context, '/sign-in', (route) => false);
+          }),
+
       body: SafeArea(
 
         child: _widgetOptions.elementAt(_selectedIndex),

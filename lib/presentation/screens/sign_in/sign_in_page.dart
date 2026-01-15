@@ -1,13 +1,15 @@
-import 'package:fit_trac/presentation/screens/sign_in/widgets/image_carousel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 import '../../../utils/app_theme.dart';
 import '../../../routes.dart';
 import '../../../utils/app_assets.dart';
+import '../../providers/auth_provider.dart';
 import '../../sign_in-sign_up-utils/auth_button.dart';
 import '../../sign_in-sign_up-utils/custom_text_field.dart';
 import 'widgets/social_auth_buttons.dart';
+import 'widgets/image_carousel.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -17,27 +19,36 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
-  // Local state for interactive elements
   bool _isPasswordVisible = false;
-  bool _isLoading = false;
 
-  // Controllers
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   void _handleSignIn() async {
-    setState(() {
-      _isLoading = true;
-    });
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-    // Simulate network delay
-    await Future.delayed(const Duration(seconds: 2));
+    final username = _emailController.text.trim();
+    final password = _passwordController.text.trim();
 
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
-      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (route) => false);
+    if (username.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter both fields")),
+      );
+      return;
+    }
+
+    bool success = await authProvider.login(username, password);
+
+    if (success) {
+      if (mounted) {
+        Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (route) => false);
+      }
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Login Failed! Please check credentials.")),
+        );
+      }
     }
   }
 
@@ -50,6 +61,8 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = context.watch<AuthProvider>().isLoading;
+
     return Scaffold(
       backgroundColor: AppTheme.primaryDarkColor,
       body: SafeArea(
@@ -59,25 +72,21 @@ class _SignInPageState extends State<SignInPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Logo
                 SvgPicture.asset(AppAssets.logo, height: 70),
 
                 const SizedBox(height: 20),
 
-                // THE IMAGE CAROUSEL
                 const ImageCarousel(),
 
                 const SizedBox(height: 30),
 
-                // Email Field
                 CustomTextField(
-                  labelText: "Email",
-                  keyboardType: TextInputType.emailAddress,
+                  labelText: "Username",
+                  keyboardType: TextInputType.text,
                   controller: _emailController,
                 ),
                 const SizedBox(height: 16),
 
-                // Password Field
                 CustomTextField(
                   labelText: "Password",
                   controller: _passwordController,
@@ -96,28 +105,24 @@ class _SignInPageState extends State<SignInPage> {
                 ),
                 const SizedBox(height: 24),
 
-                // Sign In Button
                 AuthButton(
                   text: "Sign In",
-                  isLoading: _isLoading,
+                  isLoading: isLoading,
                   onPressed: _handleSignIn,
                 ),
 
                 const SizedBox(height: 20),
 
-                // Social Buttons
                 const SocialAuthButtons(),
 
                 const SizedBox(height: 20),
 
-                // Register Row
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text("Don’t have an account? ", style: TextStyle(color: Colors.white70)),
                     GestureDetector(
                       onTap: () {
-
                       },
                       child: const Text("Register", style: TextStyle(color: AppTheme.primaryTeal, fontWeight: FontWeight.bold)),
                     ),
