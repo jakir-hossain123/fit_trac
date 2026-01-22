@@ -1,5 +1,5 @@
 import 'package:fit_trac/presentation/screens/running/runnign_summary/running_summery_grid.dart';
-import 'package:fit_trac/services/tracking_service.dart'; // ✅ নতুন আমদানি
+import 'package:fit_trac/services/tracking_service.dart' as trk;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../../routes.dart';
@@ -22,7 +22,7 @@ class RunningSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Map<String, dynamic>>(
-      future: getFinalTrackingData(),
+      future: trk.getFinalTrackingData(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(

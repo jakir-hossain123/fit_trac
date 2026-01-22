@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
-import 'package:fit_trac/models/app_user.dart';
-
+import 'package:provider/provider.dart';
 import '../../../utils/app_assets.dart';
 import '../../../utils/app_theme.dart';
 import '../../../routes.dart';
+import '../../providers/auth_provider.dart';
 import '../../sign_in-sign_up-utils/auth_button.dart';
 import '../../sign_in-sign_up-utils/custom_text_field.dart';
 
@@ -18,180 +16,120 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  // 1. Controllers and State
-  final _firestore = FirebaseFirestore.instance;
   final _formKey = GlobalKey<FormState>();
 
-  final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
-  final _emailController = TextEditingController();
+  // শুধুমাত্র প্রয়োজনীয় কন্ট্রোলার
+  final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-  // Date of Birth Controller
-  final _dobController = TextEditingController();
 
-  DateTime? _selectedDateOfBirth;
-  bool _isLoading = false;
   bool _isPasswordVisible = false;
 
   @override
   void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    _emailController.dispose();
+    _usernameController.dispose();
     _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    _dobController.dispose();
     super.dispose();
   }
 
-  // 2. Date Picker Logic
-  Future<void> _selectDateOfBirth(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDateOfBirth ?? DateTime(2000),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-      builder: (context, child) {
-        return Theme(
-          data: ThemeData.dark().copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: AppTheme.primaryTeal,
-              onPrimary: Colors.white,
-              surface: AppTheme.primaryDarkColor,
-              onSurface: Colors.white,
-            ),
-            dialogBackgroundColor: AppTheme.primaryDarkColor,
-          ),
-          child: child!,
-        );
-      },
-    );
-    if (picked != null && picked != _selectedDateOfBirth) {
-      setState(() {
-        _selectedDateOfBirth = picked;
-        _dobController.text = DateFormat('dd MMM yyyy').format(picked);
-      });
+  void _handleSignUp() async {
+    // ফর্ম ভ্যালিডেশন (খালি থাকলে এপিআই কল হবে না)
+    if (_formKey.currentState!.validate()) {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+      bool success = await authProvider.register(
+        _usernameController.text.trim(),
+        _passwordController.text.trim(),
+      );
+
+      if (success) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Registration Successful! Please login.")),
+          );
+          Navigator.pop(context);
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Registration Failed! Please check your connection or try a different username.")),
+          );
+        }
+      }
     }
   }
 
-  // 3. Firebase Sign Up Logic
-
-  // 4. Build Method
   @override
   Widget build(BuildContext context) {
-    final dobLabel = _selectedDateOfBirth == null
-        ? "Date of Birth"
-        : DateFormat('dd MMM yyyy').format(_selectedDateOfBirth!);
+    final isLoading = context.watch<AuthProvider>().isLoading;
 
     return Scaffold(
       backgroundColor: AppTheme.primaryDarkColor,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 13.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Form(
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // App Logo
-                  SvgPicture.asset(AppAssets.logo, height: 70),
-                  const SizedBox(height: 25),
+                  // Logo
+                  SvgPicture.asset(AppAssets.logo, height: 80),
+                  const SizedBox(height: 40),
 
-                  // Input Fields
-                  CustomTextField(
-                    labelText: "First Name",
-                    controller: _firstNameController,
-                    validator: (v) => v!.isEmpty ? 'Enter your first name' : null,
+                  const Text(
+                    "Create New Account",
+                    style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 16),
-                  CustomTextField(
-                    labelText: "Last Name",
-                    controller: _lastNameController,
-                    validator: (v) => v!.isEmpty ? 'Enter your last name' : null,
-                  ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 30),
 
-                  // Date of Birth Field
-                  GestureDetector(
-                    onTap: () => _selectDateOfBirth(context),
-                    child: CustomTextField(
-                      labelText: dobLabel,
-                      enabled: false,
-                      controller: _dobController,
-                      suffixIcon: const Icon(Icons.calendar_today_outlined, color: Colors.white54),
-                      validator: (v) => v!.isEmpty ? 'Select your date of birth' : null,
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
+                  // Username Field
                   CustomTextField(
-                    labelText: "Email",
-                    keyboardType: TextInputType.emailAddress,
-                    controller: _emailController,
-                    validator: (v) => v!.isEmpty || !v.contains('@') ? 'Enter a valid email' : null,
+                    labelText: "Username",
+                    controller: _usernameController,
+                    validator: (v) => v!.isEmpty ? 'Enter a username' : null,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
+
+                  // Password Field
                   CustomTextField(
                     labelText: "Password",
                     obscureText: !_isPasswordVisible,
                     controller: _passwordController,
                     suffixIcon: IconButton(
                       icon: Icon(
-                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off_outlined,
-                          color: Colors.white54
+                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off_outlined,
+                        color: Colors.white54,
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _isPasswordVisible = !_isPasswordVisible;
-                        });
-                      },
+                      onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
                     ),
-                    validator: (v) => v!.length < 6 ? 'Password must be at least 6 characters' : null,
+                    validator: (v) => v!.isEmpty ? 'Enter a password' : null,
                   ),
-                  const SizedBox(height: 16),
-                  CustomTextField(
-                    labelText: "Confirm Password",
-                    obscureText: !_isPasswordVisible,
-                    controller: _confirmPasswordController,
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off_outlined,
-                          color: Colors.white54
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _isPasswordVisible = !_isPasswordVisible;
-                        });
-                      },
-                    ),
-                    validator: (v) {
-                      if (v!.isEmpty) return 'Confirm password is required';
-                      if (v != _passwordController.text) return 'Passwords do not match';
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 30),
 
                   // Sign Up Button
+                  AuthButton(
+                    text: "Register Now",
+                    isLoading: isLoading,
+                    onPressed: _handleSignUp,
+                  ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 25),
 
-                  // Login Row'
+                  // Back to Login Row
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text("Already have any account? ", style: TextStyle(color: Colors.white70)),
+                      const Text("Already have an account? ", style: TextStyle(color: Colors.white70)),
                       GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text("Login", style: TextStyle(color: AppTheme.primaryTeal, fontWeight: FontWeight.bold)),
+                        onTap: () => Navigator.pop(context),
+                        child: const Text(
+                          "Login",
+                          style: TextStyle(color: AppTheme.primaryTeal, fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
                 ],
               ),
             ),

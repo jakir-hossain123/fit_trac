@@ -123,6 +123,7 @@ class _SignInPageState extends State<SignInPage> {
                     const Text("Don’t have an account? ", style: TextStyle(color: Colors.white70)),
                     GestureDetector(
                       onTap: () {
+                        Navigator.pushNamed(context, AppRoutes.signUp);
                       },
                       child: const Text("Register", style: TextStyle(color: AppTheme.primaryTeal, fontWeight: FontWeight.bold)),
                     ),

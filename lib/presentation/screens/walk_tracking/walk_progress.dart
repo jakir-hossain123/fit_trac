@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -275,13 +274,8 @@ class _WalkProgressScreenState extends State<WalkProgressScreen> {
               onPause: _pauseTracking,
               onStop: _stopTracking,
             ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () {
-                FirebaseCrashlytics.instance.crash();
-              },
-              child: const Text('Test Crash'),
-            )
+            const SizedBox(height: 20),
+
           ],
         ),
       ),

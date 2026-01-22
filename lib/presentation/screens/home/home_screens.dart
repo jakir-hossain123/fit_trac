@@ -1,9 +1,11 @@
 import 'package:fit_trac/presentation/screens/home/widgets/contant_page.dart';
+import 'package:fit_trac/presentation/screens/user_histrory/history.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import '../../../utils/app_theme.dart';
 import 'package:fit_trac/presentation/screens/home/widgets/home_header.dart';
 import '../../../utils/activity_permission_handler.dart';
+import '../settings/setting_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -41,24 +43,11 @@ class _HomePageState extends State<HomePage> {
       ],
     ),
 
-    const Center(
-      child: Text("Walk/Run Page Placeholder", style: TextStyle(color: Colors.white, fontSize: 24)),
-    ),
-
     // History
-    const Center(
-      child: Text("History/Chart Page", style: TextStyle(color: Colors.white, fontSize: 24)),
-    ),
-
-    // Events
-    const Center(
-      child: Text("Events Page", style: TextStyle(color: Colors.white, fontSize: 24)),
-    ),
+    History(),
 
     //  Profile
-    const Center(
-      child: Text("Profile Page", style: TextStyle(color: Colors.white, fontSize: 24)),
-    ),
+    SettingPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -107,9 +96,7 @@ class _HomePageState extends State<HomePage> {
 
             tabs: const [
               GButton(icon: Icons.home_outlined, text: 'Home'),
-              GButton(icon: Icons.directions_walk, text: 'Walk'),
               GButton(icon: Icons.pie_chart_rounded, text: 'History'),
-              GButton(icon: Icons.emoji_events_outlined, text: 'Events'),
               GButton(icon: Icons.person_outline, text: 'Profile'),
             ],
           ),

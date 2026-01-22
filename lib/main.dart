@@ -21,7 +21,7 @@ Future<void> onActionReceivedMethod(ReceivedAction receivedAction) async {
   }
 }
 
-void main() async {
+ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // 1. Firebase & Crashlytics
@@ -48,30 +48,24 @@ void main() async {
     null,
     [
       NotificationChannel(
-        channelKey: trk.NOTIFICATION_CHANNEL_ID,
-        channelName: trk.NOTIFICATION_CHANNEL_NAME,
-        channelDescription: 'Used for fitness tracking background service',
-        importance: NotificationImportance.Low,
-        defaultColor: const Color(0xFF9D50DD),
-        ledColor: Colors.white,
-        channelShowBadge: false,
-        onlyAlertOnce: true,
-        groupKey: trk.NOTIFICATION_GROUP_KEY,
-        locked: true,
-        defaultRingtoneType: DefaultRingtoneType.Notification,
+      channelKey: trk.NOTIFICATION_CHANNEL_ID,
+      channelName: trk.NOTIFICATION_CHANNEL_NAME,
+      channelDescription: 'Used for fitness tracking background service',
+      importance: NotificationImportance.Low,
+      defaultColor: const Color(0xFF9D50DD),  ledColor: Colors.white,
+      channelShowBadge: false,
+      onlyAlertOnce: true,
+      groupKey: trk.NOTIFICATION_GROUP_KEY,
+      locked: true,
       ),
     ],
     debug: true,
   );
-  AwesomeNotifications().setListeners(
-    onActionReceivedMethod: onActionReceivedMethod,
 
+  AwesomeNotifications().setListeners(
+    onActionReceivedMethod: trk.BackgroundServiceManager.onActionReceivedMethod,
   );
 
-
-
-
-  // 5. background service
   await trk.initializeService();
 
   runApp(

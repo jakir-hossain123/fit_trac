@@ -1,4 +1,5 @@
 import 'package:fit_trac/presentation/screens/sign_in/sign_in_page.dart';
+import 'package:fit_trac/presentation/screens/sign_up/sign_up_page.dart';
 import 'package:flutter/material.dart';
 import 'package:fit_trac/presentation/screens/home/home_screens.dart';
 import 'package:fit_trac/presentation/screens/run_directory/run_page.dart';
@@ -12,6 +13,7 @@ import 'package:fit_trac/presentation/screens/free_hand/free_hand_excercise_scre
 
 class AppRoutes {
   static const String signIn = '/sign-in';
+  static const String signUp = '/sign-up';
   static const String home = '/';
   static const String subCatagory = '/sub-catagory';
   static const String freeHand = '/free-hand';
@@ -26,6 +28,9 @@ class AppRoutes {
     switch (settings.name) {
       case signIn:
         return MaterialPageRoute(builder: (_) => const SignInPage());
+
+      case signUp:
+        return MaterialPageRoute(builder: (_) => const SignUpPage());
 
       case home:
         return MaterialPageRoute(builder: (_) => const HomePage());

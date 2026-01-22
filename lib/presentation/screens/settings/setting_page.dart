@@ -11,23 +11,35 @@ class SettingPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(backgroundColor:Colors.black38,
         title: const Text('Settings',),
+        centerTitle: true,
         leading: Padding(
-          padding: const EdgeInsets.only(left: 15.0),
-          child: GestureDetector(
-            onTap: () => Navigator.of(context).pushNamed(AppRoutes.home),
-              child: Icon( Icons.arrow_back_ios)),
+          padding: const EdgeInsets.only(left: 10.0, top: 8.0, bottom: 8.0),
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: Colors.teal,
+                width: 1.0,
+              ),
+            ),
+            child: IconButton(
+              padding: EdgeInsets.zero,
+              onPressed: () {
+                Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (route) => false);
+              },              icon: const Icon(
+              Icons.home_outlined,
+              color: Colors.white,
+              size: 20,
+            ),
+            ),
+          ),
         ),
 
 
       ),
       body:
       Center(
-        child: SvgPicture.asset(
-          'assets/images/setting.svg',
-          color: Colors.teal,
-          width: 200,
-          height: 200,
-        ),
+        child: Icon(Icons.settings,size: 50,),
       )
 
     );

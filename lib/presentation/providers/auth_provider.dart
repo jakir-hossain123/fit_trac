@@ -34,4 +34,34 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+
+  Future<bool> register(String username, String password) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://188.166.224.141:8080/auth/register'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          "username": username,
+          "password": password,
+          "role": "USER"
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        return data['success'] == true;
+      }
+      return false;
+    } catch (e) {
+      print("Register Error: $e");
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 }

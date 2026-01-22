@@ -1,9 +1,9 @@
 import 'package:fit_trac/presentation/screens/walk_summery/walk_summery_grid.dart';
 import 'package:fit_trac/routes.dart';
-import 'package:fit_trac/services/tracking_service.dart'; // ✅ নতুন আমদানি
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../walk_tracking/widgets/walk_map_view.dart';
+import 'package:fit_trac/services/tracking_service.dart' as trk;
 
 // Helper class for Summary Data
 class SummaryStatData {
@@ -40,7 +40,7 @@ class WalkSummaryScreen extends StatelessWidget {
     // data from shared preferences
 
     return FutureBuilder<Map<String, dynamic>>(
-      future: getFinalTrackingData(),
+      future: trk.getFinalTrackingData(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
