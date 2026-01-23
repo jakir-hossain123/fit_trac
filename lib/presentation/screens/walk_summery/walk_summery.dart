@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../walk_tracking/widgets/walk_map_view.dart';
 import 'package:fit_trac/services/tracking_service.dart' as trk;
+import 'package:fit_trac/services/history_service.dart';
 
 // Helper class for Summary Data
 class SummaryStatData {
@@ -22,11 +23,16 @@ class SummaryStatData {
   });
 }
 
-
-class WalkSummaryScreen extends StatelessWidget {
+class WalkSummaryScreen extends StatefulWidget {
   const WalkSummaryScreen({super.key});
 
+  @override
+  State<WalkSummaryScreen> createState() => _WalkSummaryScreenState();
+}
+
+class _WalkSummaryScreenState extends State<WalkSummaryScreen> {
   static const double calorieFactor = 60.0;
+  bool _isSaved = false; // Flag to ensure data is saved only once
 
   String _formatTime(int totalSeconds) {
     final minutes = (totalSeconds ~/ 60).toString().padLeft(2, '0');
@@ -34,33 +40,47 @@ class WalkSummaryScreen extends StatelessWidget {
     return '$minutes min $seconds sec';
   }
 
+  // Method to persist session data to local storage
+  void _saveToHistory(Map<String, dynamic> data, int calories) {
+    if (!_isSaved) {
+      // Type must match the filter used in HistoryScreen
+      HistoryService.saveSession("Walking", {
+        'distance': data['distance'] ?? 0.0,
+        'steps': data['steps'] ?? 0,
+        'time': data['time'] ?? 0,
+        'kcal': calories.toDouble(),
+      });
+      _isSaved = true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    // data from shared preferences
+    const Color darkBackground = Color(0xFF0F1418);
 
     return FutureBuilder<Map<String, dynamic>>(
       future: trk.getFinalTrackingData(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
-            backgroundColor: Color(0xFF0F1418),
+            backgroundColor: darkBackground,
             body: Center(child: CircularProgressIndicator(color: Colors.white)),
           );
         }
 
         final data = snapshot.data ?? {};
-
         final double totalDistanceKm = data['distance'] ?? 0.0;
         final int totalSeconds = data['time'] ?? 0;
         final int steps = data['steps'] ?? 0;
         final List<LatLng> routePoints = List<LatLng>.from(data['routePoints'] ?? []);
 
-        final String formattedTime = _formatTime(totalSeconds);
         final int calories = (totalDistanceKm * calorieFactor).toInt();
 
+        // Save data after the widget is rendered to avoid build-phase side effects
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _saveToHistory(data, calories);
+        });
 
-        // Summary Data Setup
         final List<SummaryStatData> summaryStats = [
           SummaryStatData(
             value: '${totalDistanceKm.toStringAsFixed(2)} km',
@@ -70,7 +90,7 @@ class WalkSummaryScreen extends StatelessWidget {
             color: Colors.blueAccent,
           ),
           SummaryStatData(
-            value: formattedTime,
+            value: _formatTime(totalSeconds),
             label: 'Time',
             change: '+0%',
             svgPath: 'assets/icons/time.svg',
@@ -92,8 +112,6 @@ class WalkSummaryScreen extends StatelessWidget {
           ),
         ];
 
-        const Color darkBackground = Color(0xFF0F1418);
-
         return Scaffold(
           backgroundColor: darkBackground,
           appBar: AppBar(
@@ -102,7 +120,6 @@ class WalkSummaryScreen extends StatelessWidget {
             leading: IconButton(
               icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
               onPressed: () {
-                // Navigate back to the home page after tracking
                 Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (route) => false);
               },
             ),
@@ -116,14 +133,27 @@ class WalkSummaryScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Display the recorded route on the map
-                WalkMapView(
-                  initialRoutePoints: routePoints,
-                ),
-
+                // Render the map with the recorded GPS points
+                WalkMapView(initialRoutePoints: routePoints),
                 const SizedBox(height: 30),
+                // Display statistics in a grid layout
                 WalkSummaryGrid(stats: summaryStats),
                 const SizedBox(height: 30),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 20.0),
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.home, (route) => false),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal[700],
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                    ),
+                    child: const Text(
+                      "Back to Home",
+                      style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
